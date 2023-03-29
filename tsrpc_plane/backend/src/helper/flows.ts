@@ -1,5 +1,5 @@
-import {server} from "./index";
-import {UserManagerIns} from "./mod/UserManager";
+import {server} from "../index";
+//import {UserManagerIns} from "../mod/UserManager";
 
 export function addflow()
 {
@@ -11,8 +11,8 @@ export function addflow()
 
     //链接断开
     server.flows.postDisconnectFlow.push(info => {
-        server.logger.log(`disconnect, ${info.conn.id}, ${info.reason}`);
-        UserManagerIns.deleteUser(info.conn.id);
+        //server.logger.log(`disconnect, ${info.conn.id}, ${info.reason}`);
+        //UserManagerIns.deleteUser(info.conn.id);
         return null;
     });
 }

@@ -22,4 +22,5 @@ async function main() {
     await init();
     await server.start();
 }
+
 main();
