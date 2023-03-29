@@ -13,15 +13,15 @@
     "api": "tsrpc-cli api"
   },
   "devDependencies": {
-    "@types/mocha": "^8.2.3",
-    "@types/node": "^15.14.9",
-    "mocha": "^9.2.2",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.15.11",
+    "mocha": "^10.2.0",
     "onchange": "^7.1.0",
     "ts-node": "^10.9.1",
     "tsrpc-cli": "^2.4.5",
-    "typescript": "^4.9.4"
+    "typescript": "^5.0.2"
   },
   "dependencies": {
-    "tsrpc": "^3.4.11"
+    "tsrpc": "^3.4.12"
   }
 }
