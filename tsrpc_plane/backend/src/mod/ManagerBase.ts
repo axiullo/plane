@@ -1,0 +1,4 @@
+
+class ManagerBase<T> {
+
+}

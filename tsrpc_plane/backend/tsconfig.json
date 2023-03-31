@@ -1,18 +1,24 @@
 {
   "compilerOptions": {
-    "resolveJsonModule": true,
-    "lib": [
+    "resolveJsonModule": true, // 能够解析json文件
+    "lib": [ // 指定要包含在编译中的库文件
       "es2018"
     ],
-    "module": "commonjs",
-    "target": "es2018",
-    "outDir": "dist",
-    "strict": true,
+    "module": "commonjs", // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
+    "target": "es2018", // 指定 ECMAScript 目标版本: 'ES3' (default), 'ES5', 'ES6'/'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'
+    "outDir": "dist",  // 指定输出目录
+    "strict": true,  // 启用所有严格类型检查选项
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node", // 选择模块解析策略：'node' (Node.js) or 'classic' (TypeScript pre-1.6)
+
+        /* 额外的检查 */
+    "noUnusedLocals": true,                // 有未使用的变量时，抛出错误
+    "noUnusedParameters": true,            // 有未使用的参数时，抛出错误
   },
+  
+  //可以使用 include 和 exclude 选项来指定需要包含的文件和排除的文件：
   "include": [
     "src"
   ]
