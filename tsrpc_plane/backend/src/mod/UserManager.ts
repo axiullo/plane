@@ -45,6 +45,7 @@ class UserManager {
     getConnId(uid: string): string | undefined {
         return this._userId2connId.get(uid);
     }
+
 }
 
 export var UserManagerIns = new UserManager();
