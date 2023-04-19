@@ -1,6 +1,7 @@
 import { Room } from "./Room";
 import { IdCreatorIns } from "./IdCreaterHelper";
 
+//房间管理类
 class RoomManager {
     private roomMap: Map<string, Room> = new Map<string, Room>();
 
@@ -30,3 +31,5 @@ class RoomManager {
         this.roomMap.delete(uid);
     }
 }
+
+export var RoomManagerIns = new RoomManager();

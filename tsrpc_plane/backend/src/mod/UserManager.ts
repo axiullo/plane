@@ -1,3 +1,4 @@
+//用户管理类
 class UserManager {
     //用户id对应的链接id
     private _userId2connId: Map<string, string> = new Map<string, string>;

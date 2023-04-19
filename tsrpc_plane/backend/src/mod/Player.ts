@@ -27,4 +27,8 @@ export class Player {
         this._id = id;
         this._conn = conn;
     }
+
+    getId(): string {
+        return this._id;
+    }
 }
