@@ -1,27 +1,8 @@
 import { Player, PlayerData } from "./Player";
 import { server } from "..";
+import {RoomState, RoomData} from "../shared/module/modRoom";
+import { WsConnection } from "tsrpc";
 
-//房间状态
-export enum RoomState {
-    Idle,
-    Start,
-    Over,
-    Error
-}
-
-//房间数据 
-export class RoomData {
-    //房间id
-    public id: string;
-    //房间状态
-    public state: RoomState;
-    //当前人数
-    public num: number = 0;
-    //房间人数上限
-    public numLimit: number = 0;
-    //创建时间戳
-    public createTime: number = 0;;
-}
 //房间类
 export class Room {
     //房间id
@@ -35,12 +16,12 @@ export class Room {
     //创建时间戳1
     private _createTime: number;
     //
-    private _playerConnIds:string[];
+    private _playerConns:WsConnection[];
 
     constructor(id: string, num: number = 2) {
         this._id = id;
         this._players = [];
-        this._playerConnIds = [];
+        this._playerConns = [];
         this._numLimit = num;
         this._state = RoomState.Idle;
         this._createTime = Date.now();
@@ -81,11 +62,13 @@ export class Room {
 
         var player = new Player(data.getId(), data.getConn());
         this._players.push(player);
-        this._playerConnIds.push(player.getId());
-        this.notify();
+        this._playerConns.push(player.getConn());   
 
         if (this._players.length == this._numLimit) {
             this.gameStart();
+        }
+        else{
+            this.notify();
         }
 
         return true;
@@ -96,7 +79,7 @@ export class Room {
         server.broadcastMsg('Room', {
             data: this.getRoomData()
         },
-        this._playerConnIds);
+        this._playerConns);
     }
 
     gameStart() {
@@ -113,3 +96,5 @@ export class Room {
 
     }
 }
+
+export default {}

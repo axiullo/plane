@@ -14,6 +14,10 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
         //断开之前的链接
         var connId = UserManagerIns.getConnId(call.req.userId);
 
+        if(connId){
+            call.logger.debug(call.req.userId + " has login, do disconnect");
+            server.connections.find((conn) => conn.id === connId)?.close();           
+        }
         //
         UserManagerIns.deleteUserByUid(call.req.userId);
     }

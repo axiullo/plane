@@ -1,5 +1,5 @@
 import { Room } from "./Room";
-import { IdCreatorIns } from "./IdCreaterHelper";
+import { IdCreatorIns } from "../helper/IdCreaterHelper";
 
 //房间管理类
 class RoomManager {

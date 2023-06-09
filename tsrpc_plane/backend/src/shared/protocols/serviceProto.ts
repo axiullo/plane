@@ -1,11 +1,22 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { MsgChat } from './MsgChat';
+import { MsgRoom } from './MsgRoom';
 import { MsgUserLogin } from './MsgUserLogin';
+import { ReqCreateRoom, ResCreateRoom } from './PtlCreateRoom';
+import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';
 import { ReqLogin, ResLogin } from './PtlLogin';
 import { ReqSend, ResSend } from './PtlSend';
 
 export interface ServiceType {
     api: {
+        "CreateRoom": {
+            req: ReqCreateRoom,
+            res: ResCreateRoom
+        },
+        "JoinRoom": {
+            req: ReqJoinRoom,
+            res: ResJoinRoom
+        },
         "Login": {
             req: ReqLogin,
             res: ResLogin
@@ -17,12 +28,13 @@ export interface ServiceType {
     },
     msg: {
         "Chat": MsgChat,
+        "Room": MsgRoom,
         "UserLogin": MsgUserLogin
     }
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 1,
+    "version": 2,
     "services": [
         {
             "id": 0,
@@ -30,9 +42,24 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "msg"
         },
         {
+            "id": 4,
+            "name": "Room",
+            "type": "msg"
+        },
+        {
             "id": 2,
             "name": "UserLogin",
             "type": "msg"
+        },
+        {
+            "id": 5,
+            "name": "CreateRoom",
+            "type": "api"
+        },
+        {
+            "id": 6,
+            "name": "JoinRoom",
+            "type": "api"
         },
         {
             "id": 3,
@@ -65,6 +92,81 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
+        "MsgRoom/MsgRoom": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "data",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/modRoom/RoomData"
+                    }
+                }
+            ]
+        },
+        "../module/modRoom/RoomData": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "id",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "state",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/modRoom/RoomState"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "num",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 3,
+                    "name": "numLimit",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 4,
+                    "name": "createTime",
+                    "type": {
+                        "type": "Number"
+                    }
+                }
+            ]
+        },
+        "../module/modRoom/RoomState": {
+            "type": "Enum",
+            "members": [
+                {
+                    "id": 0,
+                    "value": 0
+                },
+                {
+                    "id": 1,
+                    "value": 1
+                },
+                {
+                    "id": 2,
+                    "value": 2
+                },
+                {
+                    "id": 3,
+                    "value": 3
+                }
+            ]
+        },
         "MsgUserLogin/MsgUserLogin": {
             "type": "Interface",
             "properties": [
@@ -81,6 +183,70 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Date"
                     }
+                }
+            ]
+        },
+        "PtlCreateRoom/ReqCreateRoom": {
+            "type": "Interface"
+        },
+        "PtlCreateRoom/ResCreateRoom": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "ts",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "roomData",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/modRoom/RoomData"
+                    }
+                }
+            ]
+        },
+        "PtlJoinRoom/ReqJoinRoom": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "id",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlJoinRoom/ResJoinRoom": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "code",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "ts",
+                    "type": {
+                        "type": "Number"
+                    },
+                    "optional": true
+                },
+                {
+                    "id": 2,
+                    "name": "roomData",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/modRoom/RoomData"
+                    },
+                    "optional": true
                 }
             ]
         },

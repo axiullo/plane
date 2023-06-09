@@ -1,5 +1,4 @@
 import { ApiCall, WsConnection } from "tsrpc";
-import { server } from "..";
 import { ReqCreateRoom, ResCreateRoom } from "../shared/protocols/PtlCreateRoom";
 import {RoomManagerIns} from "../mod/RoomManager";
 import { PlayerData } from "../mod/Player";

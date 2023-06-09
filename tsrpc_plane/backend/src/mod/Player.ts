@@ -4,16 +4,16 @@ export class PlayerData {
     private _id: string;
     private _conn: WsConnection;
 
-    constructor(id: string, conn: WsConnection){
+    constructor(id: string, conn: WsConnection) {
         this._id = id;
         this._conn = conn;
     }
-    
-    getId(): string{
+
+    getId(): string {
         return this._id;
     }
 
-    getConn(): WsConnection{
+    getConn(): WsConnection {
         return this._conn;
     }
 }
@@ -30,5 +30,9 @@ export class Player {
 
     getId(): string {
         return this._id;
+    }
+
+    getConn(): WsConnection {
+        return this._conn;
     }
 }

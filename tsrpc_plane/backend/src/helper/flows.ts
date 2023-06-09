@@ -7,21 +7,24 @@ export function initflow()
     server.flows.postConnectFlow.push(conn => {
         conn.connectedTime = Date.now();
         server.logger.log(`connect success, ${conn.id}, ${conn.ip}`);
-        return null;
+        return conn;
     });
 
     //链接断开
     server.flows.postDisconnectFlow.push(info => {
         server.logger.log(`disconnect, ${info.conn.id}, ${info.reason}`);
         UserManagerIns.deleteUserByConnId(info.conn.id);
-        return null;
+        return info;
     });
 
     server.flows.preRecvDataFlow.push(info => {
+        return info
     });
 
     server.flows.preApiCallFlow.push(info => {
-        
+        server.logger.log("preApiCallFlow",info.service.name);
+
+        return info
     });
 }
 

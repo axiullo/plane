@@ -1,4 +1,4 @@
-import { RoomData } from "../../mod/Room";
+import { RoomData } from "../module/modRoom";
 
 export interface ReqJoinRoom {
     id:string
