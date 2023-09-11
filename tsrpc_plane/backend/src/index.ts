@@ -3,6 +3,9 @@ import {  WsServer } from "tsrpc";
 import {  serviceProto } from './shared/protocols/serviceProto';
 import { initflow } from "./helper/flows";
 import * as config from "./config/config.json"
+import  {DBIns} from "./mod/ModMongoDB"
+import { log } from "console";
+
 
 // Create the Server
 export const server = new WsServer(serviceProto, {
@@ -17,6 +20,9 @@ async function init() {
 
     // TODO
     // Prepare something... (e.g. connect the db)
+
+    await DBIns.init();
+    log("db connected");
 
     //初始化操作流
     initflow();

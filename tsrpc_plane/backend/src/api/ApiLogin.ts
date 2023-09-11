@@ -2,6 +2,7 @@ import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserManagerIns } from "../mod/UserManager";
+import { DBIns } from "../mod/ModMongoDB";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     // Error
@@ -10,19 +11,28 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
         return;
     }
 
-    if(UserManagerIns.hasUserId(call.req.userId)){
+    let userId = call.req.userId;
+
+    if(UserManagerIns.hasUserId(userId)){
         //断开之前的链接
-        var connId = UserManagerIns.getConnId(call.req.userId);
+        var connId = UserManagerIns.getConnId(userId);
 
         if(connId){
-            call.logger.debug(call.req.userId + " has login, do disconnect");
+            call.logger.debug(userId + " has login, do disconnect");
             server.connections.find((conn) => conn.id === connId)?.close();           
         }
         //
-        UserManagerIns.deleteUserByUid(call.req.userId);
+        UserManagerIns.deleteUserByUid(userId);
     }
 
-    UserManagerIns.addUserId(call.req.userId, call.conn.id);
+    UserManagerIns.addUserId(userId, call.conn.id);
+    
+    var dbdata = await DBIns.findOne("user", {id:userId});
+
+    if(!dbdata){
+        await DBIns.insertOne("user", {id:userId});
+    }
+    
     // Success
     let time = new Date();
     call.succ({
