@@ -24,4 +24,6 @@ class ModMongoDB{
     }
 }
  
- export var DBIns = new ModMongoDB();
+//export var DBIns = new ModMongoDB();
+var DBIns = new ModMongoDB();
+export {DBIns};

@@ -6,7 +6,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const isProduction = process.argv.indexOf('--mode=production') > -1;
 
 module.exports = {
-    entry: './src/index.ts',
+    //entry: './src/index.ts',
+    entry: './src/starttest.ts',
     output: {
         filename: 'bundle.[contenthash].js',
         path: path.resolve(__dirname, 'dist'),
@@ -42,14 +43,16 @@ module.exports = {
                 toType: 'dir',
                 globOptions: {
                     gitignore: true,
-                    ignore: [path.resolve(__dirname, 'public/index.html').replace(/\\/g, '/')]
+                    //ignore: [path.resolve(__dirname, 'public/index.html').replace(/\\/g, '/')]
+                   ignore: [path.resolve(__dirname, 'public/test.html').replace(/\\/g, '/'),path.resolve(__dirname, 'public/index.html').replace(/\\/g, '/')]
                 },
                 noErrorOnMissing: true
             }]
         }),
         // Auto add <script> to "index.html"
         new HtmlWebpackPlugin({
-            template: 'public/index.html'
+            //template: 'public/index.html'
+            template: 'public/test.html'
         }),
     ],
     devtool: isProduction ? false : 'inline-source-map'

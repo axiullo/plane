@@ -4,7 +4,13 @@ import {  serviceProto } from './shared/protocols/serviceProto';
 import { initflow } from "./helper/flows";
 import * as config from "./config/config.json"
 import  {DBIns} from "./mod/ModMongoDB"
-import { log } from "console";
+
+const eventEmitter = require('events').EventEmitter;
+const myEmitter = new eventEmitter();
+myEmitter.on("xxx", function()
+{
+
+});
 
 
 // Create the Server
@@ -22,7 +28,7 @@ async function init() {
     // Prepare something... (e.g. connect the db)
 
     await DBIns.init();
-    log("db connected");
+    server.logger.debug("db connected");
 
     //初始化操作流
     initflow();

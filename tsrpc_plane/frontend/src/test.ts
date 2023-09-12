@@ -1,18 +1,28 @@
 import { getClient } from "./getClient";
 import { MsgUserLogin } from "./shared/protocols/MsgUserLogin";
 
+//测试端状态
+export enum TestStatus
+{
+    UnLogin,
+    Logined,
+}
+
 export class Test {
+    curStatus: TestStatus = TestStatus.UnLogin;
     client = getClient();
+    curEventEmitter:any = null;
 
     constructor() {
         var self = this;
+
+        this.curStatus = TestStatus.UnLogin;
+
         // Connect at startup
         this.client.connect().then(v => {
             if (!v.isSucc) {
                 alert('= Client Connect Error =\n' + v.errMsg);
             }
-
-            self.Login();
         });
 
         // Listen Msg
@@ -27,9 +37,14 @@ export class Test {
         })
     }
 
-    private async Login() {
+    public setEventEmitter(eventEmitter: any):void
+    {
+        this.curEventEmitter = eventEmitter;
+    }
+
+    public async login(userid:string) {
         let ret = await this.client.callApi('Login', {
-            userId: "1"
+            userId: userid
         });
 
         // Error
@@ -37,5 +52,12 @@ export class Test {
             alert(ret.err.message);
             return;
         }
+
+        this.SetStatus(TestStatus.Logined);
+    }
+
+    private SetStatus(status: TestStatus) {
+        this.curStatus = status;
+        this.curEventEmitter.emit("changeStatus", status);
     }
 }

@@ -3,6 +3,7 @@ import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserManagerIns } from "../mod/UserManager";
 import { DBIns } from "../mod/ModMongoDB";
+import {DbUser} from "../db/user";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     // Error
@@ -26,11 +27,15 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     }
 
     UserManagerIns.addUserId(userId, call.conn.id);
-    
-    var dbdata = await DBIns.findOne("user", {id:userId});
+    var dbdata = await DBIns.findOne("user", {userid:userId});
 
     if(!dbdata){
-        await DBIns.insertOne("user", {id:userId});
+        var dataUer:DbUser = {
+            userid: userId,
+            name :"xxx",
+            createtime :Date.now()
+        };
+        await DBIns.insertOne("user", {...dataUer});
     }
     
     // Success
