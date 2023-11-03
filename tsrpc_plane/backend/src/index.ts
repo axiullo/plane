@@ -1,9 +1,9 @@
 import * as path from "path";
-import {  WsServer } from "tsrpc";
-import {  serviceProto } from './shared/protocols/serviceProto';
+import { WsServer } from "tsrpc";
+import { serviceProto } from './shared/protocols/serviceProto';
 import { initflow } from "./helper/flows";
 import * as config from "./config/config.json"
-import  {DBIns} from "./mod/ModMongoDB"
+import { DBIns } from "./mod/ModMongoDB"
 
 
 // Create the Server
@@ -20,7 +20,7 @@ async function init() {
     // TODO
     // Prepare something... (e.g. connect the db)
 
-    await DBIns.init(config.dbhost,config.dbport,config.dbname);
+    await DBIns.init(config.dbhost, config.dbport, config.dbname);
 
     //初始化操作流
     initflow();

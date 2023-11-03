@@ -1,21 +1,25 @@
 //
 import { Db, MongoClient } from "mongodb";
+import { server } from "../";
 
 class ModMongoDB {
     private _db!: Db;
 
     async init(host: string, port: number, dbname: string) {
         let dburl = `mongodb://${host}:${port}`;
+        //貌似连接超时没有什么用。。。
         let options = {
-            connectTimeoutMS:200, //连接超时时间n毫秒
+            connectTimeoutMS: 200, //连接超时时间n毫秒
+            socketTimeoutMS: 200,
         }
 
-        try{
+        try {
             const client = await new MongoClient(dburl, options).connect();
             this._db = client.db(dbname);
+            server.logger.log("db connect success");
         }
-        catch(err) {
-            console.log(err);           
+        catch (err: any) {
+            server.logger.error(err.message + "\n" + err.stack);
         }
     }
 
