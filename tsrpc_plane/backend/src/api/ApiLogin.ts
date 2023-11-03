@@ -1,7 +1,7 @@
 import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
-import { UserManagerIns } from "../mod/UserManager";
+import {  UserMgrIns } from "../mod/UserManager";
 import { DBIns } from "../mod/ModMongoDB";
 import {DbUser} from "../db/user";
 
@@ -14,19 +14,19 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
 
     let userId = call.req.userId;
 
-    if(UserManagerIns.hasUserId(userId)){
+    if(UserMgrIns.hasUserId(userId)){
         //断开之前的链接
-        var connId = UserManagerIns.getConnId(userId);
+        var connId = UserMgrIns.getConnId(userId);
 
         if(connId){
             call.logger.debug(userId + " has login, do disconnect");
             server.connections.find((conn) => conn.id === connId)?.close();           
         }
         //
-        UserManagerIns.deleteUserByUid(userId);
+        UserMgrIns.deleteUserByUid(userId);
     }
 
-    UserManagerIns.addUserId(userId, call.conn.id);
+    UserMgrIns.addUserId(userId, call.conn.id);
     var dbdata = await DBIns.findOne("user", {userid:userId});
 
     if(!dbdata){

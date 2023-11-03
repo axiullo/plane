@@ -1,5 +1,5 @@
 //用户管理类
-class UserManager {
+class UserMgr {
     //用户id对应的链接id
     private _userId2connId: Map<string, string> = new Map<string, string>;
     //链接id对应的用户id
@@ -46,7 +46,9 @@ class UserManager {
     getConnId(uid: string): string | undefined {
         return this._userId2connId.get(uid);
     }
-
 }
 
-export var UserManagerIns = new UserManager();
+//用户管理实例
+var UserMgrIns = new UserMgr();
+
+export { UserMgrIns };

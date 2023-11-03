@@ -5,13 +5,6 @@ import { initflow } from "./helper/flows";
 import * as config from "./config/config.json"
 import  {DBIns} from "./mod/ModMongoDB"
 
-const eventEmitter = require('events').EventEmitter;
-const myEmitter = new eventEmitter();
-myEmitter.on("xxx", function()
-{
-
-});
-
 
 // Create the Server
 export const server = new WsServer(serviceProto, {
@@ -27,8 +20,7 @@ async function init() {
     // TODO
     // Prepare something... (e.g. connect the db)
 
-    await DBIns.init();
-    server.logger.debug("db connected");
+    await DBIns.init(config.dbhost,config.dbport,config.dbname);
 
     //初始化操作流
     initflow();
