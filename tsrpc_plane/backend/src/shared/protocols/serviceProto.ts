@@ -5,6 +5,7 @@ import { MsgUserLogin } from './MsgUserLogin';
 import { ReqCreateRoom, ResCreateRoom } from './PtlCreateRoom';
 import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';
 import { ReqLogin, ResLogin } from './PtlLogin';
+import { ReqRegist, ResRegist } from './PtlRegist';
 import { ReqSend, ResSend } from './PtlSend';
 
 export interface ServiceType {
@@ -21,6 +22,10 @@ export interface ServiceType {
             req: ReqLogin,
             res: ResLogin
         },
+        "Regist": {
+            req: ReqRegist,
+            res: ResRegist
+        },
         "Send": {
             req: ReqSend,
             res: ResSend
@@ -34,7 +39,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 2,
+    "version": 7,
     "services": [
         {
             "id": 0,
@@ -64,6 +69,11 @@ export const serviceProto: ServiceProto<ServiceType> = {
         {
             "id": 3,
             "name": "Login",
+            "type": "api"
+        },
+        {
+            "id": 7,
+            "name": "Regist",
             "type": "api"
         },
         {
@@ -259,6 +269,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "String"
                     }
+                },
+                {
+                    "id": 1,
+                    "name": "password",
+                    "type": {
+                        "type": "String"
+                    }
                 }
             ]
         },
@@ -270,6 +287,37 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "time",
                     "type": {
                         "type": "Date"
+                    }
+                }
+            ]
+        },
+        "PtlRegist/ReqRegist": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 2,
+                    "name": "userId",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "password",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlRegist/ResRegist": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "result",
+                    "type": {
+                        "type": "String"
                     }
                 }
             ]

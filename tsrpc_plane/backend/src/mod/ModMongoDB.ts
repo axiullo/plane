@@ -2,7 +2,7 @@
 import { Db, MongoClient } from "mongodb";
 import { server } from "../";
 
-class ModMongoDB {
+export class ModMongoDB {
     private _db!: Db;
 
     async init(host: string, port: number, dbname: string) {
@@ -23,6 +23,11 @@ class ModMongoDB {
         }
     }
 
+    //通过主键查找
+    // async find(cltName: string, id:number){
+
+    // }
+
     async findOne(cltName: string, condition: any) {
         return await this._db.collection(cltName).findOne(condition);
     }
@@ -33,6 +38,5 @@ class ModMongoDB {
     }
 }
 
-//export var DBIns = new ModMongoDB();
 var DBIns = new ModMongoDB();
 export { DBIns };

@@ -2,6 +2,7 @@
     "host":"127.0.0.1",
     "port":3033,
     "dbhost":"127.0.0.1",
-    "dbport":27017,
-    "dbname":"plane"
+    "dbport":27018,
+    "dbname":"plane",
+    "httpport":3034
 }

@@ -1,5 +1,7 @@
+//用户登录
 export interface ReqLogin {
-    userId:string
+    userId:string,
+    password:string,
 }
 
 export interface ResLogin {

@@ -7,7 +7,7 @@ import { serviceProto } from '../../src/shared/protocols/serviceProto';
 
 describe('ApiSend', function () {
     let client = new WsClient(serviceProto, {
-        server: 'ws://127.0.0.1:3000',
+        server: 'ws://127.0.0.1:3033',
         json: true,
         logger: console
     });
