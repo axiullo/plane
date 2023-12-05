@@ -22,7 +22,7 @@ class Test {
     password: string = "testpassword";
 
     public async testRegist(): Promise<void> {
-        let msg: ReqRegist = { userId: this.username, password: this.password };
+        let msg: ReqRegist = { userid: this.username, password: this.password };
         // server.callApi("Regist", msg).then((ret: ApiReturn<ResRegist>) => {
         //     server.logger.debug("22222");
         //     server.logger.debug("Regist then", typeof (ret), ret);

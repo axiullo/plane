@@ -52,8 +52,8 @@ async function main() {
 }
 
 async function doTest() {
-    Test.instance
-    //Test.instance.startAction();
+    //Test.instance
+    Test.instance.startAction();
 }
 
 main();

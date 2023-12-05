@@ -1,19 +1,42 @@
-import { dataoperation } from './dataoperation';
 import { user } from '../db/dbstruct';
-import { objbase } from './objbase';
+import { DateTimeHelper } from '../helper/DateTimeHelper';
+import { DataBase } from './DataBase';
 
-class userobj extends objbase implements dataoperation {
-    private _data: user | null;
+/**
+ * 用户类
+ */
+export class UserObj extends DataBase implements user {
+    id?: string = ""; //主键
+    userid: string = ""; //用户id
+    createtime: number = 0; //创建时间
+    password: string = ""; //密码
 
     constructor() {
         super();
-        this._data = null;
     }
 
-    init():user {
-        var obj:user ={};
+    /**
+     * 初始化
+     * @returns 
+     */
+    init(): void {
+        this.set("userid", "");
+        this.set("createtime", DateTimeHelper.Now());
+        this.set("password", "");
+    }
 
-        return obj;
+    load(dbdata: user): void {
+        this.id = dbdata.id;
+        this.userid = dbdata.userid;
+        this.createtime = dbdata.createtime;
+        this.password = dbdata.password;
+    }
+
+    /**
+     * 数据加载时处理
+     */
+    loaded(): void {
+
     }
 
 }

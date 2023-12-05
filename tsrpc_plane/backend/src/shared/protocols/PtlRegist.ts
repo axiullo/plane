@@ -1,6 +1,6 @@
 //用户注册
 export interface ReqRegist {
-    userId:string,
+    userid:string,
     password:string,
 }
 
