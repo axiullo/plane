@@ -20,9 +20,9 @@ export class UserObj extends DataBase implements user {
      * @returns 
      */
     init(): void {
-        this.set("userid", "");
-        this.set("createtime", DateTimeHelper.Now());
-        this.set("password", "");
+        this.modify("userid", "");
+        this.modify("createtime", DateTimeHelper.Now());
+        this.modify("password", "");
     }
 
     load(dbdata: user): void {

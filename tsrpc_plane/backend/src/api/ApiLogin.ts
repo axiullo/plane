@@ -2,7 +2,7 @@ import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserMgrIns } from "../mod/UserManager";
-import { DataMgr } from "../mod/DataMgr";
+import { DataMgr } from "../shared/mod/DataMgr";
 import { UserObj } from "../shared/dataobj/UserObj";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {

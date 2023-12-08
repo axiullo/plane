@@ -1,3 +1,4 @@
+import { DataBase } from "../shared/dataobj/DataBase";
 import { ModMongoDB, DBIns } from "./ModMongoDB";
 
 /**
@@ -5,7 +6,7 @@ import { ModMongoDB, DBIns } from "./ModMongoDB";
  */
 export class ModDb {
     private static instanceObj: ModDb;
-    private  db: ModMongoDB;
+    private db: ModMongoDB;
 
     private constructor() {
         this.db = DBIns;
@@ -24,11 +25,33 @@ export class ModDb {
      * @param key 
      */
     public async FindOne(tbname: string, key: string, v: any): Promise<any> {
-        var condition:any = {};
+        let condition: any = {};
         condition[key] = v;
-        var data = await this.db.findOne(tbname, condition);
+        let data = await this.db.findOne(tbname, condition);
 
         return data;
+    }
+
+    /**
+     * 
+     * @param drityObjs 
+     */
+    public async commit(drityObjs: Map<DataBase, boolean>) {
+        let objs = drityObjs.keys();
+
+        for (let obj of objs) {
+            if(obj.isinsert){
+
+            }
+            else if(obj.isdelete){
+
+            }
+            else{
+                
+            }
+
+            drityObjs.delete(obj);
+        }
     }
 
     // /**

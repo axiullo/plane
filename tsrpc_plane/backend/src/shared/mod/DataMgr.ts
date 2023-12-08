@@ -1,7 +1,7 @@
-import { ModDb } from './ModDb';
-import { DataHelper } from '../helper/DataHelper';
-import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
-import { DataBase } from '../shared/dataobj/DataBase';
+import { ModDb } from '../../mod/ModDb';
+//import { DataHelper } from '../helper/DataHelper';
+import { DateTimeHelper } from '../helper/DateTimeHelper';
+import { DataBase } from '../dataobj/DataBase';
 
 /**
  * 数据管理类
@@ -12,8 +12,14 @@ export class DataMgr {
     //todo：这里是否应该用DataBase取代any。每次转换对象时根据tbname取对应类型。
     private id2datasMap: Map<string, Map<string, DataBase>>;
 
+    /**
+     * 脏数据对象们
+     */
+    private drityObjs: Map<DataBase, boolean>;
+
     private constructor() {
         this.id2datasMap = new Map<string, Map<string, DataBase>>();
+        this.drityObjs = new Map<DataBase, boolean>()
     };
 
     /**
@@ -32,7 +38,7 @@ export class DataMgr {
      * @param {string} id 主键
      * @returns {any} 数据实例
      */
-    public async getData<T extends DataBase>(id: string, tbname: string,cfun:new ()=>T, iscreate: boolean = true): Promise<T | null> {
+    public async getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): Promise<T | null> {
         let datasmap = this.id2datasMap.get(id);
 
         if (!datasmap) {
@@ -50,23 +56,56 @@ export class DataMgr {
                     return null;
                 }
 
-                dataobj = DataHelper.init<T>(cfun);
+                dataobj = new cfun();
+                dataobj.init(); //初始化数据
+
+                //dataobj = DataHelper.init<T>(cfun);
                 dataobj.isnew = true;
+                dataobj.isinsert = true;
             }
             else {
-                dataobj = DataHelper.create<T>(dbdata, cfun);
+                dataobj = new cfun();
+                dataobj.load(dbdata); //根据数据库数据创建数据实例
+                //dataobj = DataHelper.create<T>(dbdata, cfun);
             }
 
             datasmap.set(tbname, dataobj);
         }
 
         dataobj.updatets = DateTimeHelper.Now();
-        DataHelper.loaded(dataobj);
+        dataobj.loaded();
+        //DataHelper.loaded(dataobj);
 
-        if(dataobj.isnew){
+        if (dataobj.isnew) {
             dataobj.isnew = false;
         }
 
         return dataobj as T;
+    }
+
+    /**
+     * 设置脏数据
+     * @param obj 
+     */
+    public dirty(obj: DataBase): void {
+        this.drityObjs.set(obj, true);
+    }
+
+    /**
+     * 数据提交
+     */
+    public commit() {
+        if (this.drityObjs.size <= 0)
+            return;
+
+            ModDb.instance.commit(this.drityObjs);
+            this.drityObjs.clear();
+    }
+
+    /**
+     * 数据回滚
+     */
+    public rollback() {
+
     }
 }
