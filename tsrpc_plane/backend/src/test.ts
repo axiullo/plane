@@ -31,7 +31,7 @@ class Test {
         let ret = await server.callApi("Regist", msg);
 
         if(!ret.isSucc){
-            server.logger.debug("$$$", ret.err);
+            server.logger.debug("$$$testRegist", ret.err);
             return;
         }
     }
@@ -39,7 +39,7 @@ class Test {
     async testLogin(): Promise<void> {
         let msg: ReqLogin = { userId: this.username, password: this.password };
         server.callApi("Login", msg).then((ret: ApiReturn<ResLogin>) =>{
-            server.logger.debug("Login then", typeof (ret), ret);
+            server.logger.debug("$$$testLogin", typeof (ret), ret);
         });
     }
 

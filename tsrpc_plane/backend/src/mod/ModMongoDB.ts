@@ -10,7 +10,7 @@ export class ModMongoDB {
         //貌似连接超时没有什么用。。。
         let options = {
             connectTimeoutMS: 200, //连接超时时间n毫秒
-            socketTimeoutMS: 200,
+            socketTimeoutMS: 300000, //5分钟
         }
 
         try {
@@ -32,8 +32,40 @@ export class ModMongoDB {
         return await this._db.collection(cltName).findOne(condition);
     }
 
+    /**
+     * 插入一条数据
+     * @param cltName 
+     * @param data 
+     * @returns 
+     */
     async insertOne(cltName: string, data: any) {
         let result = await this._db.collection(cltName).insertOne(data);
+        server.logger.debug("insertOne", result, "insert data:", data);
+        return result;
+    }
+
+    /**
+     * 删除一条数据
+     * @param cltName 
+     * @param filter 
+     * @returns 
+     */
+    async deleteOne(cltName: string, filter: any) {
+        let result = await this._db.collection(cltName).deleteOne(filter);
+        return result;
+    }
+
+    /**
+     * 更新一条数据
+     * @param cltName 
+     * @param filter 
+     * @param data 
+     * @returns 
+     */
+    async updateOne(cltName: string, filter: any, data: any) {
+        server.logger.debug("updateOne before", "condition:", filter, "update data:", data);
+        let result = await this._db.collection(cltName).updateOne(filter, {$set:data});
+        server.logger.debug(result, "condition:", filter, "update data:", data);
         return result;
     }
 }

@@ -1,5 +1,5 @@
 interface base {
-    id?: string; //主键
+    id: string; //主键
     iid?:string; //二级的主键
 }
 
@@ -7,6 +7,7 @@ export interface user extends base {
     userid: string; //用户id
     createtime: number; //创建时间
     password: string; //密码
+    lastlogin:number; //上次登录时间
 }
 
 //全局表

@@ -1,4 +1,5 @@
 import { server } from "..";
+import { WmEventMgrIns } from "../mod/EventMgr";
 // import { HttpConnection } from "tsrpc";
 
 // 根据名称前缀，TSRPC 内置的 Flow 分为两类，Pre Flow 和 Post Flow。当它们的 FlowNode 中途返回了 null | undefined 时，都会中断 Flow 后续节点的执行。
@@ -28,24 +29,38 @@ export function initflow() {
         return info
     });
 
-    //在处理Api之前
+    /**
+     * 在处理Api之前
+     */
     server.flows.preApiCallFlow.push(info => {
         server.logger.log("preApiCallFlow", info.service.name);
 
         return info
     });
 
+    /*
+    * 在处理Api之后
+    */
+    server.flows.preApiReturnFlow.push(info => { 
+        if(!info.return.isSucc){
+            return info;
+        }
+
+        WmEventMgrIns.emit("DataApply", info);
+        return info;
+    });
+
 
     //===================================================================
     // httpserver.flows.preRecvDataFlow.push(v => {
     //     let conn = v.conn as HttpConnection;
-    
+
     //     if (conn.httpReq.method === 'GET') {
     //         conn.httpRes.end('Hello World');
     //         httpserver.logger.debug("###############$$$$$$$$$$$$$");
     //         return undefined;
     //     }
-    
+
     //     return v;
     // })
 }
@@ -57,9 +72,9 @@ declare module 'tsrpc' {
         connectedTime: number;
     }
 
-    export interface ApiCall {
-        currentUser: {
-            userId: string,
-        }
-    }
+    // export interface ApiCall {
+    //     currentUser: {
+    //         userId: string,
+    //     }
+    // }
 }

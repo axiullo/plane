@@ -4,6 +4,7 @@ import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserMgrIns } from "../mod/UserManager";
 import { DataMgr } from "../shared/mod/DataMgr";
 import { UserObj } from "../shared/dataobj/UserObj";
+import { DateTimeHelper } from "../shared/helper/DateTimeHelper";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     // Error
@@ -15,24 +16,33 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     let userId = call.req.userId;
     let dbdata = await DataMgr.instance.getData(userId, "user", UserObj, false);
 
-    if(!dbdata){
+    if (!dbdata) {
         call.error("user not found");
         return;
     }
+
+    if(call.req.password != dbdata.password) {
+        call.error("password error");
+        return;
+    }
+
+    dbdata.modify("lastlogin", DateTimeHelper.Now());
+    let curConnId = call.conn.id;
 
     if (UserMgrIns.hasUserId(userId)) {
         //断开之前的链接
         var connId = UserMgrIns.getConnId(userId);
 
-        if (connId) {
+        if (connId != curConnId) {
             call.logger.debug(userId + " has login, do disconnect");
             server.connections.find((conn) => conn.id === connId)?.close();
         }
+
         //
         UserMgrIns.deleteUserByUid(userId);
     }
 
-    UserMgrIns.addUserId(userId, call.conn.id);
+    UserMgrIns.addUserId(userId, curConnId);
 
     // Success
     let time = new Date();

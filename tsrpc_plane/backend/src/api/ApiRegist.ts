@@ -1,8 +1,8 @@
 import { ApiCall } from "tsrpc";
 import { ReqRegist, ResRegist } from "../shared/protocols/PtlRegist";
-import { DBIns } from "../mod/ModMongoDB";
 import { DataMgr } from "../shared/mod/DataMgr";
 import { UserObj } from "../shared/dataobj/UserObj";
+import { UserMgrIns } from "../mod/UserManager";
 
 //用户注册
 export async function ApiRegist(call: ApiCall<ReqRegist, ResRegist>) {
@@ -30,8 +30,7 @@ export async function ApiRegist(call: ApiCall<ReqRegist, ResRegist>) {
     obj.modify("userid", userId);
     obj.modify("password", call.req.password);
 
-    var insertResult = await DBIns.insertOne("user", { ...obj.dirtyData() });
-    call.logger.debug(insertResult);
+    UserMgrIns.addUserId(userId, call.conn.id);
 
     call.succ({
         result: "success",

@@ -1,5 +1,4 @@
 import { ModDb } from '../../mod/ModDb';
-//import { DataHelper } from '../helper/DataHelper';
 import { DateTimeHelper } from '../helper/DateTimeHelper';
 import { DataBase } from '../dataobj/DataBase';
 
@@ -58,15 +57,12 @@ export class DataMgr {
 
                 dataobj = new cfun();
                 dataobj.init(); //初始化数据
-
-                //dataobj = DataHelper.init<T>(cfun);
                 dataobj.isnew = true;
                 dataobj.isinsert = true;
             }
             else {
                 dataobj = new cfun();
                 dataobj.load(dbdata); //根据数据库数据创建数据实例
-                //dataobj = DataHelper.create<T>(dbdata, cfun);
             }
 
             datasmap.set(tbname, dataobj);
@@ -74,13 +70,22 @@ export class DataMgr {
 
         dataobj.updatets = DateTimeHelper.Now();
         dataobj.loaded();
-        //DataHelper.loaded(dataobj);
 
         if (dataobj.isnew) {
             dataobj.isnew = false;
         }
 
         return dataobj as T;
+    }
+
+    /**
+     * 移除缓存
+     * @param id 主键
+     * @param tbname 表名
+     */
+    public removeCache(id: string, tbname: string) {
+        let datasmap = this.id2datasMap.get(id);
+        datasmap?.delete(tbname);
     }
 
     /**
@@ -94,18 +99,39 @@ export class DataMgr {
     /**
      * 数据提交
      */
-    public commit() {
+    public async commit() {
         if (this.drityObjs.size <= 0)
             return;
 
-            ModDb.instance.commit(this.drityObjs);
-            this.drityObjs.clear();
+        let objs = this.drityObjs.keys();
+
+        for (let obj of objs) {
+            if (obj.isinsert) {
+                ModDb.instance.insertOne(obj.tbname, obj.dirtyData());
+            }
+            else if (obj.isdelete) {
+                ModDb.instance.deleteOne(obj.tbname, { id: obj.id });
+            }
+            else {
+                ModDb.instance.updateOne(obj.tbname, { id: obj.id }, obj.dirtyData());
+            }
+
+            this.drityObjs.delete(obj);
+        }
     }
 
     /**
      * 数据回滚
      */
     public rollback() {
+        if (this.drityObjs.size <= 0)
+            return;
 
+        let objs = this.drityObjs.keys();
+        for (let obj of objs) {
+            this.removeCache(obj.id, obj.tbname);
+        }
+
+        this.drityObjs.clear();
     }
 }

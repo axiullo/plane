@@ -1,4 +1,3 @@
-import { DataBase } from "../shared/dataobj/DataBase";
 import { ModMongoDB, DBIns } from "./ModMongoDB";
 
 /**
@@ -33,25 +32,37 @@ export class ModDb {
     }
 
     /**
-     * 
-     * @param drityObjs 
+     * 插入一条数据
+     * @param tbname 表名 
+     * @param obj 数据
+     * @returns 
      */
-    public async commit(drityObjs: Map<DataBase, boolean>) {
-        let objs = drityObjs.keys();
+    public async insertOne(tbname: string, obj: any): Promise<any> {
+        let result = await this.db.insertOne(tbname, obj);
+        return result;
+    }
 
-        for (let obj of objs) {
-            if(obj.isinsert){
+    /**
+     * 更新一条数据
+     * @param tbname 表名 
+     * @param filter 条件
+     * @param obj 更新数据
+     * @returns 
+     */
+    public async updateOne(tbname: string, filter: any, obj: any): Promise<any> {
+        let result = await this.db.updateOne(tbname, filter, obj);
+        return result;
+    }
 
-            }
-            else if(obj.isdelete){
-
-            }
-            else{
-                
-            }
-
-            drityObjs.delete(obj);
-        }
+    /**
+     * 删除一条数据
+     * @param tbname 表名
+     * @param filter 删除条件
+     * @returns 
+     */
+    public async deleteOne(tbname: string, filter: any) {
+        let result = await this.db.deleteOne(tbname, filter);
+        return result;
     }
 
     // /**

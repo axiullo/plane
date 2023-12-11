@@ -6,7 +6,7 @@ import * as config from "./config/config.json"
 import { DBIns } from "./mod/ModMongoDB"
 import { Test } from "./test";
 import express from "express";
-
+import "./helper/EventsHelper"; //导入监听事件处理
 
 // Create the httpServer
 const app = express();

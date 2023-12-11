@@ -3,7 +3,17 @@ import { DataMgr } from "../mod/DataMgr";
  * 数据基础类
  */
 export abstract class DataBase {
+    /**
+     * 索引签名。 通过字符串获得值，缺点安全性低。
+     */
     [key: string]: any;
+    /**
+     * 表名
+     */
+    tbname:string = "";
+    /**
+     * 更新时间
+     */
     updatets: number;
     /**
      * 是否首次创建
@@ -17,6 +27,16 @@ export abstract class DataBase {
      * 是否删除
      */
     isdelete: boolean = false;
+
+    /**
+     * 主键
+     */
+    id: string = "";
+
+    /**
+     * mongo _id键值 
+     */
+    _id?: string = "";
 
     dirtySet: Set<string> = new Set();
     readonly emptyData: any = {};
