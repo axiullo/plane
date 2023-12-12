@@ -26,7 +26,7 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
         return;
     }
 
-    dbdata.modify("lastlogin", DateTimeHelper.Now());
+    dbdata.modify("lastlogin", DateTimeHelper.now());
     let curConnId = call.conn.id;
 
     if (UserMgrIns.hasUserId(userId)) {

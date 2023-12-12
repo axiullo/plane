@@ -10,6 +10,11 @@ export interface user extends base {
     lastlogin:number; //上次登录时间
 }
 
+export interface apple extends base {
+    day0:number; //
+    isqiandao:boolean; //是否签到
+}
+
 //全局表
 export interface sys extends base {
     autoid: number; //全局的自增id

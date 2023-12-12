@@ -3,9 +3,10 @@ import { DateTimeHelper } from '../helper/DateTimeHelper';
 import { DataBase } from './DataBase';
 
 /**
- * 用户类
+ * 用户数据
  */
 export class UserObj extends DataBase implements user {
+    tbname = "user";
     userid: string = ""; //用户id
     createtime: number = 0; //创建时间
     password: string = ""; //密码
@@ -13,7 +14,6 @@ export class UserObj extends DataBase implements user {
 
     constructor() {
         super();
-        this.tbname = "user";
     }
 
     /**
@@ -22,9 +22,9 @@ export class UserObj extends DataBase implements user {
      */
     init(): void {
         this.modify("userid", "");
-        this.modify("createtime", DateTimeHelper.Now());
+        this.modify("createtime", DateTimeHelper.now());
         this.modify("password", "");
-        this.modify("lastlogin", DateTimeHelper.Now());
+        this.modify("lastlogin", DateTimeHelper.now());
     }
 
     load(dbdata: user): void {

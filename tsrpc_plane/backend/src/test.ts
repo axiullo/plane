@@ -21,7 +21,11 @@ class Test {
     username: string = "testuser";
     password: string = "testpassword";
 
-    public async testRegist(): Promise<void> {
+    /**
+     * 用户注册
+     * @returns 注册成功返回true，否则返回false
+     */
+    public async testRegist(): Promise<boolean> {
         let msg: ReqRegist = { userid: this.username, password: this.password };
         // server.callApi("Regist", msg).then((ret: ApiReturn<ResRegist>) => {
         //     server.logger.debug("22222");
@@ -32,20 +36,41 @@ class Test {
 
         if(!ret.isSucc){
             server.logger.debug("$$$testRegist", ret.err);
-            return;
+            return false;
         }
+
+        return true;
     }
 
-    async testLogin(): Promise<void> {
+    /**
+     * 用户登录
+     */
+    async testLogin(): Promise<boolean> {
         let msg: ReqLogin = { userId: this.username, password: this.password };
-        server.callApi("Login", msg).then((ret: ApiReturn<ResLogin>) =>{
+        
+        return server.callApi("Login", msg).then((ret: ApiReturn<ResLogin>) =>{
             server.logger.debug("$$$testLogin", typeof (ret), ret);
+
+            if(!ret.isSucc){
+                server.logger.debug("$$$testLogin", ret.err);
+                return false;
+            }
+
+            return true;
         });
     }
 
     async startAction():Promise<void>{
-        await this.testRegist();
-        await this.testLogin();
+        let retRegist = await this.testRegist();
+
+        if(!retRegist){
+            let retLogin = await this.testLogin();
+
+            if(!retLogin){
+                server.logger.debug("登录失败");
+                return;
+            }
+        }
     }
 }
 

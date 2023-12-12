@@ -24,7 +24,8 @@ app.get("/server", (_, res: express.Response) => {
 export const server = new WsServer(serviceProto, {
     port: config.port,
     // Remove this to use binary mode (remove from the client too)
-    json: true
+    json: true,
+    logConnect:true,
 });
 
 

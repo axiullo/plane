@@ -43,8 +43,13 @@ class UserMgr {
     hasUserId(uid: string): boolean {
         return this._userId2connId.has(uid);
     }
+
     getConnId(uid: string): string | undefined {
         return this._userId2connId.get(uid);
+    }
+
+    getUserId(connId: string): string | undefined  {
+        return this._connId2userId.get(connId);
     }
 }
 

@@ -10,7 +10,7 @@ export abstract class DataBase {
     /**
      * 表名
      */
-    tbname:string = "";
+    abstract tbname:string;
     /**
      * 更新时间
      */

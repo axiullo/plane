@@ -68,7 +68,7 @@ export class DataMgr {
             datasmap.set(tbname, dataobj);
         }
 
-        dataobj.updatets = DateTimeHelper.Now();
+        dataobj.updatets = DateTimeHelper.now();
         dataobj.loaded();
 
         if (dataobj.isnew) {
