@@ -1,5 +1,6 @@
 import { server } from "..";
 import { WmEventMgrIns } from "../mod/EventMgr";
+import { UserMgrIns } from "../mod/UserManager";
 // import { HttpConnection } from "tsrpc";
 
 // 根据名称前缀，TSRPC 内置的 Flow 分为两类，Pre Flow 和 Post Flow。当它们的 FlowNode 中途返回了 null | undefined 时，都会中断 Flow 后续节点的执行。
@@ -12,7 +13,6 @@ import { WmEventMgrIns } from "../mod/EventMgr";
 export function initflow() {
     //客户端连接后 链接成功
     server.flows.postConnectFlow.push(conn => {
-        conn.connectedTime = Date.now();
         server.logger.log(`connect success, ${conn.id}, ${conn.ip}`);
         return conn;
     });
@@ -35,14 +35,24 @@ export function initflow() {
     server.flows.preApiCallFlow.push(info => {
         server.logger.log("preApiCallFlow", info.service.name);
 
+        if (info.service.name !== "Regist" && info.service.name !== "Login") {
+            let userId = UserMgrIns.getUserId(info.conn.id);
+
+            if (!userId) {
+                return null;
+            }
+
+            info.userdata = { userId: userId };
+        }
+
         return info
     });
 
     /*
     * 在处理Api之后
     */
-    server.flows.preApiReturnFlow.push(info => { 
-        if(!info.return.isSucc){
+    server.flows.preApiReturnFlow.push(info => {
+        if (!info.return.isSucc) {
             return info;
         }
 
@@ -65,16 +75,14 @@ export function initflow() {
     // })
 }
 
-// //扩展模块
+/* 
+* 扩展模块
+*/
 declare module 'tsrpc' {
-    export interface BaseConnection {
-        // 自定义的新字段
-        connectedTime: number;
+    // 对现有模块添加自定义的新字段
+    export interface ApiCall {
+        userdata: {
+            userId: string,
+        }
     }
-
-    // export interface ApiCall {
-    //     currentUser: {
-    //         userId: string,
-    //     }
-    // }
 }

@@ -42,43 +42,30 @@ class B extends base {
   }
 }
 
-// 定义一个映射类型，键是字符串，值是类型
-type TypeMap = {
-  'string': String,
-  'number': Number,
-  // 在这里添加更多的类型
-};
-
-// 创建一个与 TypeMap 类型相对应的值
-const typeMapValue: { [K in keyof TypeMap]: new () => TypeMap[K] } = {
-  'string': String,
-  'number': Number,
-  // 在这里添加更多的类型
-};
-
-// 创建实例的函数
-function createInstance<T extends keyof typeof typeMapValue>(type: T): InstanceType<typeof typeMapValue[T]> {
-  return new typeMapValuetype;
-}
-
-// 使用示例
-let instance = createInstance('string');
-console.log(instance instanceof String);  // 输出：true
-
-instance = createInstance('number');
-console.log(instance instanceof Number);  // 输出：true
 
 
 
 
 
 
-var omap = new Map<string, base>();
 var t = {
   "A": A,
   "B": B,
 }
 
+console.log(t["A"]);
+
+var p = new t["A"]();
+console.log(p);
+
+for (let key in t) {
+  if (t.hasOwnProperty(key)) {
+    console.log(`key: ${key}`);
+    // console.log(typeof t[key]);
+  }
+}
+
+var omap = new Map<string, base>();
 /**
  * Get data
  * @param name The name of the data object

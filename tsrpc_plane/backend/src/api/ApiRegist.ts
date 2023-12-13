@@ -29,6 +29,7 @@ export async function ApiRegist(call: ApiCall<ReqRegist, ResRegist>) {
     obj.modify("id", userId);
     obj.modify("userid", userId);
     obj.modify("password", call.req.password);
+    obj.modify("name", call.req.name);
 
     UserMgrIns.addUserId(userId, call.conn.id);
 

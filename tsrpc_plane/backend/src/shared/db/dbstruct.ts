@@ -8,6 +8,7 @@ export interface user extends base {
     createtime: number; //创建时间
     password: string; //密码
     lastlogin:number; //上次登录时间
+    name:string; //昵称
 }
 
 export interface apple extends base {

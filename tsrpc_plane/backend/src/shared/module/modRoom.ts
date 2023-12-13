@@ -1,22 +1,24 @@
+import { PlayerInfo } from "./ModPlayerInfo";
 
 //房间状态
 export enum RoomState {
-    Idle,
-    Start,
-    Over,
-    Error
+    Ready,  //准备中
+    Start, //游戏开始
+    Over, //游戏结束
 }
 
 //房间数据 
 export interface RoomData {
     //房间id
-     id: string;
+    id: string;
     //房间状态
-     state: RoomState;
+    state: RoomState;
     //当前人数
-     num: number;
+    num: number;
     //房间人数上限
-     numLimit: number;
+    numLimit: number;
     //创建时间戳
-     createTime: number;
+    createTime: number;
+    //玩家信息
+    playerInfos: PlayerInfo[];
 }

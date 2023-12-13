@@ -2,6 +2,7 @@
 export interface ReqRegist {
     userid:string,
     password:string,
+    name:string,
 }
 
 export interface ResRegist {

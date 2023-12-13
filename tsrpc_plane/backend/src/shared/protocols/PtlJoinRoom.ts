@@ -1,7 +1,7 @@
-import { RoomData } from "../module/modRoom";
+import { RoomData } from "../module/ModRoom";
 
 export interface ReqJoinRoom {
-    id:string
+    id:string //房间号，如果为空字符串，则创建房间。
 }
 
 export interface ResJoinRoom {

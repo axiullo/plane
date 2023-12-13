@@ -1,8 +1,9 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { MsgChat } from './MsgChat';
+import { MsgGetData } from './MsgGetData';
 import { MsgRoom } from './MsgRoom';
 import { MsgUserLogin } from './MsgUserLogin';
-import { ReqCreateRoom, ResCreateRoom } from './PtlCreateRoom';
+import { ReqGetData, ResGetData } from './PtlGetData';
 import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';
 import { ReqLogin, ResLogin } from './PtlLogin';
 import { ReqRegist, ResRegist } from './PtlRegist';
@@ -10,9 +11,9 @@ import { ReqSend, ResSend } from './PtlSend';
 
 export interface ServiceType {
     api: {
-        "CreateRoom": {
-            req: ReqCreateRoom,
-            res: ResCreateRoom
+        "GetData": {
+            req: ReqGetData,
+            res: ResGetData
         },
         "JoinRoom": {
             req: ReqJoinRoom,
@@ -33,17 +34,23 @@ export interface ServiceType {
     },
     msg: {
         "Chat": MsgChat,
+        "GetData": MsgGetData,
         "Room": MsgRoom,
         "UserLogin": MsgUserLogin
     }
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 8,
+    "version": 9,
     "services": [
         {
             "id": 0,
             "name": "Chat",
+            "type": "msg"
+        },
+        {
+            "id": 8,
+            "name": "GetData",
             "type": "msg"
         },
         {
@@ -57,8 +64,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "msg"
         },
         {
-            "id": 5,
-            "name": "CreateRoom",
+            "id": 9,
+            "name": "GetData",
             "type": "api"
         },
         {
@@ -102,6 +109,25 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
+        "MsgGetData/MsgGetData": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "name",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "data",
+                    "type": {
+                        "type": "Any"
+                    }
+                }
+            ]
+        },
         "MsgRoom/MsgRoom": {
             "type": "Interface",
             "properties": [
@@ -110,12 +136,12 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "data",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/modRoom/RoomData"
+                        "target": "../module/ModRoom/RoomData"
                     }
                 }
             ]
         },
-        "../module/modRoom/RoomData": {
+        "../module/ModRoom/RoomData": {
             "type": "Interface",
             "properties": [
                 {
@@ -130,7 +156,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "state",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/modRoom/RoomState"
+                        "target": "../module/ModRoom/RoomState"
                     }
                 },
                 {
@@ -153,10 +179,21 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Number"
                     }
+                },
+                {
+                    "id": 5,
+                    "name": "playerInfos",
+                    "type": {
+                        "type": "Array",
+                        "elementType": {
+                            "type": "Reference",
+                            "target": "../module/ModPlayerInfo/PlayerInfo"
+                        }
+                    }
                 }
             ]
         },
-        "../module/modRoom/RoomState": {
+        "../module/ModRoom/RoomState": {
             "type": "Enum",
             "members": [
                 {
@@ -170,10 +207,32 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 {
                     "id": 2,
                     "value": 2
+                }
+            ]
+        },
+        "../module/ModPlayerInfo/PlayerInfo": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "id",
+                    "type": {
+                        "type": "String"
+                    }
                 },
                 {
-                    "id": 3,
-                    "value": 3
+                    "id": 1,
+                    "name": "name",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "avatar",
+                    "type": {
+                        "type": "String"
+                    }
                 }
             ]
         },
@@ -196,28 +255,11 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "PtlCreateRoom/ReqCreateRoom": {
+        "PtlGetData/ReqGetData": {
             "type": "Interface"
         },
-        "PtlCreateRoom/ResCreateRoom": {
-            "type": "Interface",
-            "properties": [
-                {
-                    "id": 0,
-                    "name": "ts",
-                    "type": {
-                        "type": "Number"
-                    }
-                },
-                {
-                    "id": 1,
-                    "name": "roomData",
-                    "type": {
-                        "type": "Reference",
-                        "target": "../module/modRoom/RoomData"
-                    }
-                }
-            ]
+        "PtlGetData/ResGetData": {
+            "type": "Interface"
         },
         "PtlJoinRoom/ReqJoinRoom": {
             "type": "Interface",
@@ -254,7 +296,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "roomData",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/modRoom/RoomData"
+                        "target": "../module/ModRoom/RoomData"
                     },
                     "optional": true
                 }

@@ -11,6 +11,7 @@ export class UserObj extends DataBase implements user {
     createtime: number = 0; //创建时间
     password: string = ""; //密码
     lastlogin: number = 0; //上次登录时间
+    name: string = ""; //昵称
 
     constructor() {
         super();
@@ -25,17 +26,23 @@ export class UserObj extends DataBase implements user {
         this.modify("createtime", DateTimeHelper.now());
         this.modify("password", "");
         this.modify("lastlogin", DateTimeHelper.now());
+        this.modify("name", "");
     }
 
+    /**
+     * 加载数据
+     * @param dbdata 数据库数据
+     */
     load(dbdata: user): void {
         this.id = dbdata.id;
         this.userid = dbdata.userid;
         this.createtime = dbdata.createtime;
         this.password = dbdata.password;
+        this.name = dbdata.name;
     }
 
     /**
-     * 数据加载时处理
+     * 数据加载完毕时处理
      */
     loaded(): void {
 

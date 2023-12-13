@@ -1,10 +1,11 @@
 import { Player, PlayerData } from "./Player";
 import { server } from "..";
-import {RoomState, RoomData} from "../shared/module/modRoom";
+import { RoomState, RoomData } from "../shared/module/ModRoom";
 import { WsConnection } from "tsrpc";
+import { PlayerInfo } from "../shared/module/ModPlayerInfo";
 
 //房间类
-export class Room {
+class Room {
     //房间id
     private _id: string;
     //玩家列表
@@ -16,14 +17,17 @@ export class Room {
     //创建时间戳1
     private _createTime: number;
     //
-    private _playerConns:WsConnection[];
+    private _playerConns: WsConnection[];
+    //
+    private _playerInfos: PlayerInfo[];
 
     constructor(id: string, num: number = 2) {
         this._id = id;
         this._players = [];
         this._playerConns = [];
+        this._playerInfos = [];
         this._numLimit = num;
-        this._state = RoomState.Idle;
+        this._state = RoomState.Ready;
         this._createTime = Date.now();
     }
 
@@ -34,7 +38,8 @@ export class Room {
             num: this._players.length,
             state: this._state,
             numLimit: this._numLimit,
-            createTime: this._createTime
+            createTime: this._createTime,
+            playerInfos:this._playerInfos,
         }
     }
 
@@ -43,8 +48,8 @@ export class Room {
         return this._players.length >= this._numLimit;
     }
 
-    isIdel(): boolean {
-        return this._state == RoomState.Idle;
+    isReady(): boolean {
+        return this._state == RoomState.Ready;
     }
 
     hasPlayer(userId: string): boolean {
@@ -56,18 +61,18 @@ export class Room {
     }
 
     addPlayer(data: PlayerData) {
-        if (this._players.length >= this._numLimit) {
+        if (this.isFull()) {
             return false;
         }
 
         var player = new Player(data.getId(), data.getConn());
         this._players.push(player);
-        this._playerConns.push(player.getConn());   
+        this._playerConns.push(player.getConn());
 
         if (this._players.length == this._numLimit) {
             this.gameStart();
         }
-        else{
+        else {
             this.notify();
         }
 
@@ -79,7 +84,7 @@ export class Room {
         server.broadcastMsg('Room', {
             data: this.getRoomData()
         },
-        this._playerConns);
+            this._playerConns);
     }
 
     gameStart() {
@@ -92,9 +97,13 @@ export class Room {
         this.notify();
     }
 
+    update(){
+        
+    }
+
     destroy() {
 
     }
 }
 
-export default {}
+export { Room }

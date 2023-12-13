@@ -10,25 +10,31 @@ class RoomManager {
     }
 
     createRoom(): Room {
-        var uid = IdCreatorIns.getUid()
-        var ins = new Room(uid, 2);
+        let uid = IdCreatorIns.getUid()
+        let ins = new Room(uid, 2);
         this.roomMap.set(uid, ins);
 
         return ins;
     }
 
-    getRoom(uid:string):Room | undefined {
+    getRoom(uid: string): Room | undefined {
         return this.roomMap.get(uid);
     }
 
-    delRoom(uid:string):void {
+    delRoom(uid: string): void {
         var ins = this.getRoom(uid);
 
-        if(ins){
+        if (ins) {
             ins.destroy();
         }
-        
+
         this.roomMap.delete(uid);
+    }
+
+    update(): void {
+        this.roomMap.forEach((room) => {
+            room.update();
+        })
     }
 }
 

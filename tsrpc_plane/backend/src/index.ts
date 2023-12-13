@@ -7,12 +7,13 @@ import { DBIns } from "./mod/ModMongoDB"
 import { Test } from "./test";
 import express from "express";
 import "./helper/EventsHelper"; //导入监听事件处理
+import { Game } from "./mod/Game";
 
 // Create the httpServer
 const app = express();
 
 app.get('/', (req: express.Request, res: express.Response) => {
-    console.log(req.get('content-type'), req.get('contenttype'), req.ip,req.protocol);
+    console.log(req.get('content-type'), req.get('contenttype'), req.ip, req.protocol);
     res.send('Hello, world!');
 });
 
@@ -25,7 +26,8 @@ export const server = new WsServer(serviceProto, {
     port: config.port,
     // Remove this to use binary mode (remove from the client too)
     json: true,
-    logConnect:true,
+    logConnect: true,
+    apiTimeout: 200, //api调用超时时间, 毫秒
 });
 
 
@@ -48,6 +50,12 @@ async function main() {
     await server.start();
 
     app.listen(config.httpport);
+
+    Game.start();
+
+    process.on('uncaughtException', (err) => {
+        server.logger.error('!!!There was an uncaught error', err);
+    });
 
     doTest();
 }
