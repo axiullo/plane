@@ -36,8 +36,10 @@ export class DataMgr {
      * 获得数据
      * @param {string} id 主键
      * @returns {any} 数据实例
+     * 
+     * todo: 根据tbname获得数据结构， 这里不应该再用cfun参数
      */
-    public async getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): Promise<T | null> {
+    public getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): T | null {
         let datasmap = this.id2datasMap.get(id);
 
         if (!datasmap) {
@@ -48,7 +50,7 @@ export class DataMgr {
         let dataobj = datasmap.get(tbname);
 
         if (!dataobj) {
-            let dbdata = await ModDb.instance.FindOne(tbname, "id", id);
+            let dbdata = ModDb.instance.FindOne(tbname, "id", id);
 
             if (!dbdata) {
                 if (!iscreate) {

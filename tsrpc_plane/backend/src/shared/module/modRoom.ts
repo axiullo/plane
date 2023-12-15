@@ -1,8 +1,10 @@
 import { PlayerInfo } from "./ModPlayerInfo";
+import { Grid } from "./ModPlane";
 
 //房间状态
 export enum RoomState {
     Ready,  //准备中
+    Deploy, //部署中
     Start, //游戏开始
     Over, //游戏结束
 }
@@ -21,4 +23,6 @@ export interface RoomData {
     createTime: number;
     //玩家信息
     playerInfos: PlayerInfo[];
+    //飞机格子图
+    map: Grid[][]
 }

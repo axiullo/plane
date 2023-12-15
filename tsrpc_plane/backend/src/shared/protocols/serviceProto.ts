@@ -1,7 +1,7 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { MsgChat } from './MsgChat';
 import { MsgGetData } from './MsgGetData';
-import { MsgRoom } from './MsgRoom';
+import { MsgRoom } from './MsgRoomData';
 import { MsgUserLogin } from './MsgUserLogin';
 import { ReqGetData, ResGetData } from './PtlGetData';
 import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';

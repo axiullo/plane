@@ -1,9 +1,9 @@
-import { ApiCall, WsConnection } from "tsrpc";
+import { ApiCall } from "tsrpc";
 import { ReqJoinRoom, ResJoinRoom } from "../shared/protocols/PtlJoinRoom";
 import { RoomManagerIns } from "../mod/RoomManager";
-import { PlayerData } from "../mod/Player";
 import { DataMgr } from "../shared/mod/DataMgr";
 import { UserObj } from "../shared/dataobj/UserObj";
+import { AppleObj } from "../shared/dataobj/AppleObj";
 
 export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
     let room;
@@ -29,18 +29,35 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
         return;
     }
 
+    let userdata = DataMgr.instance.getData(call.userdata.userId, "user", UserObj, false);
+
+    if (!userdata) {
+        return call.error("user not found");
+    }
+
     if (room.hasPlayer(call.conn.id)) {
-        call.succ({
-            code: 4
+        room.reconnect({
+            id: call.conn.id,
+            conn: call.conn,
+            name: userdata.name
         });
+
+        call.succ({
+            roomData: room.getRoomData(),
+        });
+
         return;
     }
 
-    let userdata = DataMgr.instance.getData(call.userdata.userId, "user", UserObj);
-    room.addPlayer(new PlayerData(call.conn.id, call.conn as WsConnection));
+    room.addPlayer({
+        id: call.conn.id,
+        conn: call.conn,
+        name: userdata.name
+    });
+
+
 
     call.succ({
-        code: 0,
         ts: Date.now(),
         roomData: room.getRoomData(),
     });

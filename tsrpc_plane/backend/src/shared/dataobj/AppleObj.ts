@@ -33,5 +33,6 @@ export class AppleObj extends DataBase implements apple {
         }
 
         this.modify("day0", DateTimeHelper.day0());
+        this.modify("isqiandao", false);
     }
 }

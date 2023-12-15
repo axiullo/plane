@@ -1,38 +1,27 @@
-import { WsConnection } from "tsrpc";
+import { BaseConnection } from "tsrpc";
 
-export class PlayerData {
-    private _id: string;
-    private _conn: WsConnection;
-
-    constructor(id: string, conn: WsConnection) {
-        this._id = id;
-        this._conn = conn;
-    }
-
-    getId(): string {
-        return this._id;
-    }
-
-    getConn(): WsConnection {
-        return this._conn;
-    }
+/**
+ * 玩家数据
+ */
+export interface PlayerData {
+    id: string;
+    conn: BaseConnection;
+    name: string;
 }
 
 //玩家类
 export class Player {
-    private _id: string;
-    private _conn: WsConnection;
+    private data!: PlayerData;
 
-    constructor(id: string, conn: WsConnection) {
-        this._id = id;
-        this._conn = conn;
+    constructor(data: PlayerData) {
+        data = { ...data };
     }
 
     getId(): string {
-        return this._id;
+        return this.data.id;
     }
 
-    getConn(): WsConnection {
-        return this._conn;
+    getConn(): BaseConnection {
+        return this.data.conn;
     }
 }

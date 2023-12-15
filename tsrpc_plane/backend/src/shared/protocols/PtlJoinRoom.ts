@@ -5,7 +5,6 @@ export interface ReqJoinRoom {
 }
 
 export interface ResJoinRoom {
-    code:number,
     ts?: number,
     roomData?:RoomData,
 }
