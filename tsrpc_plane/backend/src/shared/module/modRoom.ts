@@ -1,5 +1,4 @@
 import { PlayerInfo } from "./ModPlayerInfo";
-import { Grid } from "./ModPlane";
 
 //房间状态
 export enum RoomState {
@@ -23,6 +22,4 @@ export interface RoomData {
     createTime: number;
     //玩家信息
     playerInfos: PlayerInfo[];
-    //飞机格子图
-    map: Grid[][]
 }

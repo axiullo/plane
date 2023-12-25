@@ -4,7 +4,7 @@ import { DataMgr } from "../shared/mod/DataMgr";
 import { AppleObj } from "../shared/dataobj/AppleObj";
 
 export default async function (call: ApiCall<ReqQiandao, ResQiandao>) {
-    let appleData = DataMgr.instance.getData(call.userdata.userId, "apple", AppleObj);
+    let appleData = await DataMgr.instance.getData(call.userdata.userId, "apple", AppleObj);
 
     if (!appleData) {
         call.error("apple not found");

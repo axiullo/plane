@@ -3,7 +3,6 @@ import { ReqJoinRoom, ResJoinRoom } from "../shared/protocols/PtlJoinRoom";
 import { RoomManagerIns } from "../mod/RoomManager";
 import { DataMgr } from "../shared/mod/DataMgr";
 import { UserObj } from "../shared/dataobj/UserObj";
-import { AppleObj } from "../shared/dataobj/AppleObj";
 
 export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
     let room;
@@ -29,7 +28,7 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
         return;
     }
 
-    let userdata = DataMgr.instance.getData(call.userdata.userId, "user", UserObj, false);
+    let userdata = await DataMgr.instance.getData(call.userdata.userId, "user", UserObj, false);
 
     if (!userdata) {
         return call.error("user not found");

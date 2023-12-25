@@ -13,40 +13,42 @@
 /**
  * 方向
  */
-type Direction = 'up' | 'left' | 'down' | 'right';
-type DirPlane = { [key in Direction]: number[][]; };
+type PlaneDirection = 'up' | 'left' | 'down' | 'right';
+//type DirPlane = { [key in PlaneDirection]: number[][] };
 
 /**
  * 不同方向上的飞机布局
  */
-const Plane: DirPlane = {
-    //上
-    "up": [
-        [0, 1, 0],
-        [1, 1, 1],
-        [0, 1, 0],
-        [1, 1, 1]
-    ],
-    //左
-    "left": [
-        [0, 1, 0, 1],
-        [1, 1, 1, 1],
-        [0, 1, 0, 1],
-    ],
-    //下
-    "down": [
-        [1, 1, 1],
-        [0, 1, 0],
-        [1, 1, 1],
-        [0, 1, 0],
-    ],
-    //右
-    "right": [
-        [1, 0, 1, 0],
-        [1, 1, 1, 1],
-        [1, 0, 1, 0]
-    ]
-}
+// const Plane: DirPlane = {
+//     //上
+//     "up": [
+//         [0, 1, 0],
+//         [1, 1, 1],
+//         [0, 1, 0],
+//         [1, 1, 1]
+//     ],
+//     //左
+//     "left": [
+//         [0, 1, 0, 1],
+//         [1, 1, 1, 1],
+//         [0, 1, 0, 1],
+//     ],
+//     //下
+//     "down": [
+//         [1, 1, 1],
+//         [0, 1, 0],
+//         [1, 1, 1],
+//         [0, 1, 0],
+//     ],
+//     //右
+//     "right": [
+//         [1, 0, 1, 0],
+//         [1, 1, 1, 1],
+//         [1, 0, 1, 0]
+//     ]
+// }
+
+const Plane:any = {}
 
 /**
  * 不同方向上的飞机头位置
@@ -110,7 +112,7 @@ class GamePlane {
      * @param y 
      * @returns 
      */
-    checkPut(map: Grid[][], dir: Direction, x: number, y: number) {
+    checkPut(map: Grid[][], dir: PlaneDirection, x: number, y: number) {
         if (!Plane.hasOwnProperty(dir)) {
             return false;
         }
@@ -145,7 +147,7 @@ class GamePlane {
     /**
      * 
      */
-    putPlane(uid: string, dir: Direction, x: number, y: number): boolean {
+    putPlane(uid: string, dir: PlaneDirection, x: number, y: number): boolean {
         let modelplane = Plane[dir];
         let planeW = modelplane[0].length;
         let planeH = modelplane.length;

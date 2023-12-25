@@ -1,7 +1,7 @@
 import { Player, PlayerData } from "./Player";
 import { server } from "..";
 import { RoomState, RoomData } from "../shared/module/ModRoom";
-import { BaseConnection } from "tsrpc";
+import { WsConnection } from "tsrpc";
 import { PlayerInfo, PlayerState } from "../shared/module/ModPlayerInfo";
 import { GamePlane } from "../shared/module/ModPlane";
 
@@ -18,7 +18,7 @@ class Room {
     //创建时间戳
     private _createTime: number;
     //
-    private _playerConns: BaseConnection[];
+    private _playerConns: WsConnection[];
     //
     private _playerInfos: PlayerInfo[];
     //
@@ -47,7 +47,6 @@ class Room {
             numLimit: this._numLimit,
             createTime: this._createTime,
             playerInfos: this._playerInfos,
-            map: this._game.map,
         }
     }
 
@@ -89,7 +88,7 @@ class Room {
     doAddPlayer(data: PlayerData) {
         var player = new Player(data);
         this._players.set(data.id, player);
-        this._playerConns.push(player.getConn());
+        this._playerConns.push(player.getConn() as WsConnection);
     }
 
     notify() {

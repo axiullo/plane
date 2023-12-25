@@ -35,15 +35,17 @@ export function initflow() {
     server.flows.preApiCallFlow.push(info => {
         server.logger.log("preApiCallFlow", info.service.name);
 
-        if (info.service.name !== "Regist" && info.service.name !== "Login") {
-            let userId = UserMgrIns.getUserId(info.conn.id);
+        // if (info.service.name !== "Regist" && info.service.name !== "Login") {
+        //     let userId = UserMgrIns.getUserId(info.conn.id);
+        UserMgrIns.getUserId(info.conn.id);
 
-            if (!userId) {
-                return null;
-            }
+        //     if (!userId) {
+        //         server.logger.log("preApiCallFlow Fail", info.service.name);
+        //         return null;
+        //     }
 
-            info.userdata = { userId: userId };
-        }
+        //     info.userdata = { userId: userId };
+        // }
 
         return info
     });

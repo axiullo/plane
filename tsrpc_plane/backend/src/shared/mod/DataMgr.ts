@@ -1,6 +1,18 @@
 import { ModDb } from '../../mod/ModDb';
 import { DateTimeHelper } from '../helper/DateTimeHelper';
 import { DataBase } from '../dataobj/DataBase';
+import { UserObj } from '../dataobj/UserObj';
+import { AppleObj } from '../dataobj/AppleObj';
+
+interface ClassFactory<T> {
+    new(): T;
+}
+
+// 类工厂对象
+export let tbname2Obj: { [key: string]: ClassFactory<DataBase> } = {
+    "user": UserObj,
+    "apple": AppleObj,
+};
 
 /**
  * 数据管理类
@@ -32,6 +44,15 @@ export class DataMgr {
         return this.sinstance;
     }
 
+    public async getDataObjByName<T extends DataBase>(id: string, key: string, factories: { [key: string]: ClassFactory<T> }): Promise<T | null> {
+        const factory = factories[key];
+        if (factory) {
+            let obj = await this.getData(id, key, factory);
+            return obj; //(new factory()) as T;
+        }
+        return null;
+    }
+
     /**
      * 获得数据
      * @param {string} id 主键
@@ -39,7 +60,7 @@ export class DataMgr {
      * 
      * todo: 根据tbname获得数据结构， 这里不应该再用cfun参数
      */
-    public getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): T | null {
+    public async getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): Promise<T | null> {
         let datasmap = this.id2datasMap.get(id);
 
         if (!datasmap) {
@@ -50,7 +71,7 @@ export class DataMgr {
         let dataobj = datasmap.get(tbname);
 
         if (!dataobj) {
-            let dbdata = ModDb.instance.FindOne(tbname, "id", id);
+            let dbdata = await ModDb.instance.FindOne(tbname, "id", id);
 
             if (!dbdata) {
                 if (!iscreate) {

@@ -1,11 +1,13 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { MsgChat } from './MsgChat';
 import { MsgGetData } from './MsgGetData';
-import { MsgRoom } from './MsgRoomData';
+import { MsgRoomData } from './MsgRoomData';
 import { MsgUserLogin } from './MsgUserLogin';
 import { ReqGetData, ResGetData } from './PtlGetData';
 import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';
 import { ReqLogin, ResLogin } from './PtlLogin';
+import { ReqPlay, ResPlay } from './PtlPlay';
+import { ReqQiandao, ResQiandao } from './PtlQiandao';
 import { ReqRegist, ResRegist } from './PtlRegist';
 import { ReqSend, ResSend } from './PtlSend';
 
@@ -23,6 +25,14 @@ export interface ServiceType {
             req: ReqLogin,
             res: ResLogin
         },
+        "Play": {
+            req: ReqPlay,
+            res: ResPlay
+        },
+        "Qiandao": {
+            req: ReqQiandao,
+            res: ResQiandao
+        },
         "Regist": {
             req: ReqRegist,
             res: ResRegist
@@ -35,13 +45,13 @@ export interface ServiceType {
     msg: {
         "Chat": MsgChat,
         "GetData": MsgGetData,
-        "Room": MsgRoom,
+        "RoomData": MsgRoomData,
         "UserLogin": MsgUserLogin
     }
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 9,
+    "version": 11,
     "services": [
         {
             "id": 0,
@@ -54,8 +64,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "msg"
         },
         {
-            "id": 4,
-            "name": "Room",
+            "id": 10,
+            "name": "RoomData",
             "type": "msg"
         },
         {
@@ -76,6 +86,16 @@ export const serviceProto: ServiceProto<ServiceType> = {
         {
             "id": 3,
             "name": "Login",
+            "type": "api"
+        },
+        {
+            "id": 11,
+            "name": "Play",
+            "type": "api"
+        },
+        {
+            "id": 12,
+            "name": "Qiandao",
             "type": "api"
         },
         {
@@ -128,7 +148,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "MsgRoom/MsgRoom": {
+        "MsgRoomData/MsgRoomData": {
             "type": "Interface",
             "properties": [
                 {
@@ -207,6 +227,10 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 {
                     "id": 2,
                     "value": 2
+                },
+                {
+                    "id": 3,
+                    "value": 3
                 }
             ]
         },
@@ -232,7 +256,29 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "avatar",
                     "type": {
                         "type": "String"
+                    },
+                    "optional": true
+                },
+                {
+                    "id": 3,
+                    "name": "state",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/ModPlayerInfo/PlayerState"
                     }
+                }
+            ]
+        },
+        "../module/ModPlayerInfo/PlayerState": {
+            "type": "Enum",
+            "members": [
+                {
+                    "id": 0,
+                    "value": 0
+                },
+                {
+                    "id": 1,
+                    "value": 1
                 }
             ]
         },
@@ -276,13 +322,6 @@ export const serviceProto: ServiceProto<ServiceType> = {
         "PtlJoinRoom/ResJoinRoom": {
             "type": "Interface",
             "properties": [
-                {
-                    "id": 0,
-                    "name": "code",
-                    "type": {
-                        "type": "Number"
-                    }
-                },
                 {
                     "id": 1,
                     "name": "ts",
@@ -333,6 +372,48 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
+        "PtlPlay/ReqPlay": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "rid",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "uid",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "x",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 3,
+                    "name": "y",
+                    "type": {
+                        "type": "Number"
+                    }
+                }
+            ]
+        },
+        "PtlPlay/ResPlay": {
+            "type": "Interface"
+        },
+        "PtlQiandao/ReqQiandao": {
+            "type": "Interface"
+        },
+        "PtlQiandao/ResQiandao": {
+            "type": "Interface"
+        },
         "PtlRegist/ReqRegist": {
             "type": "Interface",
             "properties": [
@@ -346,6 +427,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 {
                     "id": 1,
                     "name": "password",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 4,
+                    "name": "name",
                     "type": {
                         "type": "String"
                     }

@@ -3,6 +3,7 @@ import { server } from './';
 //import { ReqRegist,ResRegist } from './shared/protocols/PtlRegist';
 import { ReqRegist } from './shared/protocols/PtlRegist';
 import { ReqLogin, ResLogin } from "./shared/protocols/PtlLogin";
+import { ReqGetData, ResGetData } from './shared/protocols/PtlGetData';
 
 class Test {
     private static _singleton: Test;
@@ -60,6 +61,21 @@ class Test {
         });
     }
 
+    async testGetData(): Promise<boolean> {
+        let msg: ReqGetData = {};
+        
+        return server.callApi("GetData", msg).then((ret: ApiReturn<ResGetData>) => {
+            server.logger.debug("$$$testGetData", typeof (ret), ret);
+
+            if (!ret.isSucc) {
+                server.logger.debug("$$$testGetData", ret.err);
+                return false;
+            }
+
+            return true;
+        })
+    }
+
     async startAction(): Promise<void> {
         let retRegist = await this.testRegist();
 
@@ -70,6 +86,8 @@ class Test {
                 server.logger.debug("登录失败");
                 return;
             }
+
+            await this.testGetData();
         }
     }
 }
