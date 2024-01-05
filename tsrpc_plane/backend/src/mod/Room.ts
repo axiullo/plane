@@ -21,7 +21,7 @@ class Room {
     private _playerConns: WsConnection[];
     //
     private _playerInfos: PlayerInfo[];
-    //
+    //玩法对象
     private _game: GamePlane;
 
     constructor(id: string, num: number = 2) {
@@ -33,6 +33,10 @@ class Room {
         this._state = RoomState.Ready;
         this._createTime = Date.now();
         this._game = new GamePlane();
+    }
+
+    getGame(): GamePlane {
+        return this._game;
     }
 
     /**
@@ -47,6 +51,7 @@ class Room {
             numLimit: this._numLimit,
             createTime: this._createTime,
             playerInfos: this._playerInfos,
+            gamedata: this._game.getGameData(),
         }
     }
 
@@ -101,7 +106,7 @@ class Room {
 
     gameStart() {
         this._state = RoomState.Start;
-        this._game.initMap([...this._players.keys()]);
+        this._game.init([...this._players.keys()]);
         this.notify();
     }
 

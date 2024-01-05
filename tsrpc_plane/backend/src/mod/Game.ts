@@ -9,7 +9,7 @@ let Game = {
     },
 
     updateFrame: function () {
-        console.debug("update ", DateTimeHelper.now());
+        //console.debug("update ", DateTimeHelper.now());
     },
 }
 

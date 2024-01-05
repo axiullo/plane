@@ -1,3 +1,6 @@
+
+
+
 abstract class base {
   [key: string]: any;
 
@@ -29,78 +32,68 @@ class A extends base {
 }
 
 class B extends base {
-  private m: number;
+  m: number;
 
   constructor() {
     super();
     this.m = 0;
   }
   init(): base {
-    this.m = 10;
+    this.m = 20;
 
     return this;
   }
 }
 
+class C extends base {
+  str:string;
 
-
-
-
-
-
-var t = {
-  "A": A,
-  "B": B,
-}
-
-console.log(t["A"]);
-
-var p = new t["A"]();
-console.log(p);
-
-for (let key in t) {
-  if (t.hasOwnProperty(key)) {
-    console.log(`key: ${key}`);
-    // console.log(typeof t[key]);
+  constructor() {
+    super();
+    this.str = "";
+  }
+  init() {
+    this.str = "c";
   }
 }
 
-var omap = new Map<string, base>();
+
+let strType = {
+  "A": () => new A(),
+  "B": ()=> new B(),
+  "C": () => new C(),
+}
+
+let strType2 = {
+  "A": ()=>A,
+}
+
 /**
  * Get data
  * @param name The name of the data object
  * @returns The data object with the given name
  */
-function getdata<T extends base>(name: string, constructor: new () => T): T {
-  let obj: base | undefined = omap.get(name);
-
-  if (!obj) {
-    console.log("create");
-    obj = new constructor();
-    obj!.init();
-
-    omap.set(name, obj);
-  }
-
-  console.log("return");
-  return obj as T;
+function getdata<T>(obj: T): T {
+  return obj;
 }
 
-// let tmp = getdata<A>("A", A);
-// console.log(tmp);
+function getstrdata<T extends base>(name: string, cfun:()=>T): T {
+  let o = cfun();
+  return o as T;
+}
 
-// let tmp2 = getdata<A>("A", A);
-// console.log(tmp2);
+let k = "A"
+var aaa = getstrdata("A", strType[k]);
+aaa.init();
+console.log("11111111111   " + aaa.n);
 
-// tmp["n"] = 20;
-// console.log(tmp.n);
+var bbb = getstrdata("B", strType["B"]);
+bbb.init();
+console.log("bbbbbbbbbbbbb", bbb.m );
 
-// tmp.set("n", 50)
-// console.log(tmp.n);
-
-// tmp.set("nn", 50)
-// console.log(tmp.nn);
-
+var ccc = getstrdata("C", strType["C"]);
+ccc.init();
+console.log(ccc.str)
 
 
 function day0() {
@@ -125,36 +118,3 @@ function day0() {
 }
 
 // day0();
-
-
-let Plane = {
-  //上
-  "up": [
-      [0, 1, 0],
-      [1, 1, 1],
-      [0, 1, 0],
-      [1, 1, 1]
-  ],
-  //左
-  "left": [
-      [0, 1, 0, 1],
-      [1, 1, 1, 1],
-      [0, 1, 0, 1],
-  ],
-  //下
-  "down": [
-      [1, 1, 1],
-      [0, 1, 0],
-      [1, 1, 1],
-      [0, 1, 0],
-  ],
-  //右
-  "right": [
-      [1, 0, 1, 0],
-      [1, 1, 1, 1],
-      [1, 0, 1, 0]
-  ]
-}
-
-let dir:string = "up";
-console.log(Plane[dir]);

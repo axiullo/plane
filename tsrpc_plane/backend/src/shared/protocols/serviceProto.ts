@@ -6,6 +6,8 @@ import { MsgUserLogin } from './MsgUserLogin';
 import { ReqGetData, ResGetData } from './PtlGetData';
 import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';
 import { ReqLogin, ResLogin } from './PtlLogin';
+import { ReqPlanePut, ResPlanePut } from './PtlPlanePut';
+import { ReqPlaneTurn, ResPlaneTurn } from './PtlPlaneTurn';
 import { ReqPlay, ResPlay } from './PtlPlay';
 import { ReqQiandao, ResQiandao } from './PtlQiandao';
 import { ReqRegist, ResRegist } from './PtlRegist';
@@ -24,6 +26,14 @@ export interface ServiceType {
         "Login": {
             req: ReqLogin,
             res: ResLogin
+        },
+        "PlanePut": {
+            req: ReqPlanePut,
+            res: ResPlanePut
+        },
+        "PlaneTurn": {
+            req: ReqPlaneTurn,
+            res: ResPlaneTurn
         },
         "Play": {
             req: ReqPlay,
@@ -51,7 +61,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 11,
+    "version": 13,
     "services": [
         {
             "id": 0,
@@ -86,6 +96,16 @@ export const serviceProto: ServiceProto<ServiceType> = {
         {
             "id": 3,
             "name": "Login",
+            "type": "api"
+        },
+        {
+            "id": 13,
+            "name": "PlanePut",
+            "type": "api"
+        },
+        {
+            "id": 14,
+            "name": "PlaneTurn",
             "type": "api"
         },
         {
@@ -210,6 +230,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                             "target": "../module/ModPlayerInfo/PlayerInfo"
                         }
                     }
+                },
+                {
+                    "id": 6,
+                    "name": "gamedata",
+                    "type": {
+                        "type": "Any"
+                    }
                 }
             ]
         },
@@ -227,10 +254,6 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 {
                     "id": 2,
                     "value": 2
-                },
-                {
-                    "id": 3,
-                    "value": 3
                 }
             ]
         },
@@ -371,6 +394,120 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 }
             ]
+        },
+        "PtlPlanePut/ReqPlanePut": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 3,
+                    "name": "roomid",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 0,
+                    "name": "dir",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/ModPlane/PlaneDirection"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "x",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "y",
+                    "type": {
+                        "type": "Number"
+                    }
+                }
+            ]
+        },
+        "../module/ModPlane/PlaneDirection": {
+            "type": "Union",
+            "members": [
+                {
+                    "id": 0,
+                    "type": {
+                        "type": "Literal",
+                        "literal": "up"
+                    }
+                },
+                {
+                    "id": 1,
+                    "type": {
+                        "type": "Literal",
+                        "literal": "left"
+                    }
+                },
+                {
+                    "id": 2,
+                    "type": {
+                        "type": "Literal",
+                        "literal": "down"
+                    }
+                },
+                {
+                    "id": 3,
+                    "type": {
+                        "type": "Literal",
+                        "literal": "right"
+                    }
+                }
+            ]
+        },
+        "PtlPlanePut/ResPlanePut": {
+            "type": "Interface"
+        },
+        "PtlPlaneTurn/ReqPlaneTurn": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 4,
+                    "name": "roomid",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 0,
+                    "name": "enemyUid",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "dir",
+                    "type": {
+                        "type": "Reference",
+                        "target": "../module/ModPlane/PlaneDirection"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "x",
+                    "type": {
+                        "type": "Number"
+                    }
+                },
+                {
+                    "id": 3,
+                    "name": "y",
+                    "type": {
+                        "type": "Number"
+                    }
+                }
+            ]
+        },
+        "PtlPlaneTurn/ResPlaneTurn": {
+            "type": "Interface"
         },
         "PtlPlay/ReqPlay": {
             "type": "Interface",

@@ -44,11 +44,12 @@ export class DataMgr {
         return this.sinstance;
     }
 
-    public async getDataObjByName<T extends DataBase>(id: string, key: string, factories: { [key: string]: ClassFactory<T> }): Promise<T | null> {
-        const factory = factories[key];
+    public async getDataObjByName(id: string, key: string): Promise<DataBase | null> {
+        const factory = tbname2Obj[key];
+
         if (factory) {
             let obj = await this.getData(id, key, factory);
-            return obj; //(new factory()) as T;
+            return obj;
         }
         return null;
     }

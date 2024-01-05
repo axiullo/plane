@@ -2,8 +2,8 @@ import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserMgrIns } from "../mod/UserManager";
-import { DataMgr } from "../shared/mod/DataMgr";
-import { UserObj } from "../shared/dataobj/UserObj";
+import { DataMgr, tbname2Obj } from "../shared/mod/DataMgr";
+// import { UserObj } from "../shared/dataobj/UserObj";
 import { DateTimeHelper } from "../shared/helper/DateTimeHelper";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {
@@ -14,7 +14,8 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     }
 
     let userId = call.req.userId;
-    let dbdata = await DataMgr.instance.getData(userId, "user", UserObj, false);
+    // let dbdata = await DataMgr.instance.getData(userId, "user", UserObj, false);
+    let dbdata = await DataMgr.instance.getData(userId, "user", tbname2Obj["user"], false);
 
     if (!dbdata) {
         call.error("user not found");
