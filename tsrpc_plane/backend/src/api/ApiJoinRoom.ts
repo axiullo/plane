@@ -1,8 +1,8 @@
 import { ApiCall } from "tsrpc";
 import { ReqJoinRoom, ResJoinRoom } from "../shared/protocols/PtlJoinRoom";
 import { RoomManagerIns } from "../mod/RoomManager";
-import { DataMgr } from "../shared/mod/DataMgr";
-import { UserObj } from "../shared/dataobj/UserObj";
+import { DataMgr } from "../mod/DataMgr";
+import { UserObj } from "../dataobj/UserObj";
 
 export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
     let room;

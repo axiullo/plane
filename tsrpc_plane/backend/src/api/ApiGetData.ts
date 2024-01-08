@@ -2,7 +2,7 @@ import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqGetData, ResGetData } from "../shared/protocols/PtlGetData";
 import { UserMgrIns } from "../mod/UserManager";
-import { DataMgr } from "../shared/mod/DataMgr";
+import { DataMgr } from "../mod/DataMgr";
 import { DataHelper } from "../helper/DataHelper";
 import { MsgGetData } from "../shared/protocols/MsgGetData";
 

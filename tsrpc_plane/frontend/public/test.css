@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body>h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.app {
+    display: flex;
+    justify-content: center;
+}
+
+.send {
+    flex: 0 0 40px;
+    display: flex;
+    border-top: 1px solid #454545;
+}
+
+.send>* {
+    border: none;
+    outline: none;
+    height: 100%;
+    font-size: 16px;
+}
+
+.send>input {
+    flex: 1;
+    background: #fff;
+    padding: 0 10px;
+}
+
+.send>button {
+    flex: 0 0 100px;
+    background: #215fa4;
+    color: white;
+    cursor: pointer;
+}
+
+.send>button:hover {
+    background: #4b80bb;
+}

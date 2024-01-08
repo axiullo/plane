@@ -1,7 +1,7 @@
 import { ApiCall } from "tsrpc";
 import { ReqQiandao, ResQiandao } from "../shared/protocols/PtlQiandao";
-import { DataMgr } from "../shared/mod/DataMgr";
-import { AppleObj } from "../shared/dataobj/AppleObj";
+import { DataMgr } from "../mod/DataMgr";
+import { AppleObj } from "../dataobj/AppleObj";
 
 export default async function (call: ApiCall<ReqQiandao, ResQiandao>) {
     let appleData = await DataMgr.instance.getData(call.userdata.userId, "apple", AppleObj);

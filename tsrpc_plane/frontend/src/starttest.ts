@@ -1,33 +1,68 @@
-import { Test,TestStatus } from "./test";
+import { Test, TestStatus } from "./test";
 const eventEmitter = require('events').EventEmitter;
 
-var myevent = new eventEmitter();
-var testIns = new Test();
+let myevent = new eventEmitter();
+let testIns = new Test();
 testIns.setEventEmitter(myevent);
 
-function showPage(){
-    if(testIns.curStatus == TestStatus.UnLogin){
-        showLoginPage();
+document.body.setAttribute("class", "app");
+
+function showPage() {
+    switch (testIns.curStatus) {
+        case TestStatus.UnLogin:
+            showLoginPage();
+            break;
+        case TestStatus.Regist:
+            registPage();
+            break;
+        default:
+            alert("todo  status=" + testIns.curStatus);
+            break;
     }
 }
 
-function showLoginPage(){
+function showLoginPage() {
+    var useridDiv = document.createElement("div");
+    useridDiv.setAttribute("style", "display:block;");
+    var nameLabel = document.createElement("label");
+    nameLabel.textContent = "userid:";
+    useridDiv.appendChild(nameLabel);
+
+    var nameInput = document.createElement("input");
+    useridDiv.appendChild(nameInput);
+
+    var btnDiv = document.createElement("div");
+    btnDiv.setAttribute("style", "display:block;");
+    var loginBtn = document.createElement("Button");
+    loginBtn.textContent = "Login";
+    loginBtn.addEventListener("click", async function () {
+        testIns.login(nameInput.value, "123456");
+    });
+
+    btnDiv.append(loginBtn);
+
+    document.body.appendChild(useridDiv);
+    document.body.append(btnDiv);
+}
+
+function registPage() {
     var bodyDiv = document.createElement("div");
     bodyDiv.setAttribute("style", "display:block;");
+
 
     var useridDiv = document.createElement("div");
     useridDiv.setAttribute("style", "display:block;");
     var nameLabel = document.createElement("label");
-    nameLabel.textContent ="userid:";
+    nameLabel.textContent = "userid:";
     useridDiv.appendChild(nameLabel);
 
     var nameInput = document.createElement("input");
     useridDiv.appendChild(nameInput);
 
     var loginBtn = document.createElement("Button");
-    loginBtn.textContent = "Login";
-    loginBtn.addEventListener("click", async function(){
-        testIns.login(nameInput.value);
+    loginBtn.textContent = "Regis";
+    loginBtn.addEventListener("click", async function () {
+        testIns.login(nameInput.value, "123456");
     });
 
     bodyDiv.append(useridDiv);
@@ -37,7 +72,7 @@ function showLoginPage(){
 
 //清除所有组件
 function clearComponents() {
-    var body = document.body;    
+    var body = document.body;
     // 获取 body 的所有子元素
     var childElements = body.children;
 
@@ -47,8 +82,7 @@ function clearComponents() {
     }
 }
 
-myevent.on("changeStatus", async function(){
-    console.log("event emit");
+myevent.on("changeStatus", async function () {
     clearComponents();
     showPage();
 });

@@ -1,5 +1,5 @@
-import { user } from '../db/dbstruct';
-import { DateTimeHelper } from '../helper/DateTimeHelper';
+import { user } from '../shared/db/dbstruct';
+import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
 import { DataBase } from './DataBase';
 
 /**

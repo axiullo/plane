@@ -1,5 +1,5 @@
-import { apple } from '../db/dbstruct';
-import { DateTimeHelper } from '../helper/DateTimeHelper';
+import { apple } from '../shared/db/dbstruct';
+import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
 import { DataBase } from './DataBase';
 
 /**

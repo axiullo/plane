@@ -6,6 +6,7 @@ export enum TestStatus
 {
     UnLogin,
     Logined,
+    Regist,
 }
 
 export class Test {
@@ -14,8 +15,7 @@ export class Test {
     curEventEmitter:any = null;
 
     constructor() {
-        var self = this;
-
+        let self = this;
         this.curStatus = TestStatus.UnLogin;
 
         // Connect at startup
@@ -42,14 +42,19 @@ export class Test {
         this.curEventEmitter = eventEmitter;
     }
 
-    public async login(userid:string) {
+    public async login(userid:string,password:string) {
         let ret = await this.client.callApi('Login', {
-            userId: userid
+            userId: userid,
+            password:password
         });
 
         // Error
         if (!ret.isSucc) {
             alert(ret.err.message);
+
+            if(ret.err.code == 1){
+                this.SetStatus(TestStatus.Regist);
+            }
             return;
         }
 

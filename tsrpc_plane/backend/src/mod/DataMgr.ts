@@ -1,5 +1,5 @@
-import { ModDb } from '../../mod/ModDb';
-import { DateTimeHelper } from '../helper/DateTimeHelper';
+import { ModDb } from './ModDb';
+import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
 import { DataBase } from '../dataobj/DataBase';
 import { UserObj } from '../dataobj/UserObj';
 import { AppleObj } from '../dataobj/AppleObj';

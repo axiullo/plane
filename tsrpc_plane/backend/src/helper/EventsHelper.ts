@@ -1,5 +1,5 @@
 import { WmEventMgrIns } from "../mod/EventMgr";
-import { DataMgr } from "../shared/mod/DataMgr";
+import { DataMgr } from "../mod/DataMgr";
 /**
  * 数据提交
  */

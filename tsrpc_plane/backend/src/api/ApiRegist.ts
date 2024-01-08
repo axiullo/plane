@@ -1,7 +1,7 @@
 import { ApiCall } from "tsrpc";
 import { ReqRegist, ResRegist } from "../shared/protocols/PtlRegist";
-import { DataMgr } from "../shared/mod/DataMgr";
-import { UserObj } from "../shared/dataobj/UserObj";
+import { DataMgr } from "../mod/DataMgr";
+import { UserObj } from "../dataobj/UserObj";
 import { UserMgrIns } from "../mod/UserManager";
 
 //用户注册
