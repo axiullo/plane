@@ -1,9 +1,12 @@
 import { getClient } from "./getClient";
-import { MsgUserLogin } from "./shared/protocols/MsgUserLogin";
+import { Sdata } from "./mod/SData";
+import { SyncDataOpt } from "./shared/protocols/MsgSyncData";
+import { ServiceType } from "./shared/protocols/serviceProto";
 
 //测试端状态
 export enum TestStatus
 {
+    Test,
     UnLogin,
     Logined,
     Regist,
@@ -27,8 +30,22 @@ export class Test {
 
         // Listen Msg
         this.client.listenMsg('UserLogin', v => { 
-            console.log(`Login suc ${v.userId}, ${v.time}`)
+            console.log(`Login suc ${v.userid}, ${v.time}`)
         })
+
+        this.client.listenMsg('SyncData', v => {
+            v.datas.forEach((data) =>{
+                if (data.opt == SyncDataOpt.Delete){
+                    
+                }
+                else if (data.opt == SyncDataOpt.Set){
+                    Sdata.getInstance().setData(data.tbname, data.data);
+                }
+                else if (data.opt == SyncDataOpt.Update){
+                    Sdata.getInstance().updateValue(data.tbname, data.data);
+                }
+            });
+        });
 
         // When disconnected
         this.client.flows.postDisconnectFlow.push(v => {
@@ -44,7 +61,7 @@ export class Test {
 
     public async login(userid:string,password:string) {
         let ret = await this.client.callApi('Login', {
-            userId: userid,
+            userid: userid,
             password:password
         });
 
@@ -59,6 +76,43 @@ export class Test {
         }
 
         this.SetStatus(TestStatus.Logined);
+    }
+
+    public async regist(userid:string,password:string){
+        let ret = await this.client.callApi('Regist', {
+            userid: userid,
+            password:password,
+            name:userid,
+        });
+
+        // Error
+        if (!ret.isSucc) {
+            alert(ret.err.message);
+
+            if(ret.err.code == 1){
+                this.SetStatus(TestStatus.Regist);
+            }
+            return;
+        }
+
+        this.SetStatus(TestStatus.Logined);
+    }
+
+    public async sendMsg(msgName:string &  keyof ServiceType['api'], args:any){
+        let ret = await this.client.callApi(msgName, args);
+
+        if (!ret.isSucc) {
+            alert(ret.err.message);
+            return;
+        }
+
+        switch(msgName){
+            case "JoinRoom":
+                
+                break;
+        }
+
+        alert("success");
     }
 
     private SetStatus(status: TestStatus) {

@@ -3,9 +3,10 @@ import { ReqRegist, ResRegist } from "../shared/protocols/PtlRegist";
 import { DataMgr } from "../mod/DataMgr";
 import { UserObj } from "../dataobj/UserObj";
 import { UserMgrIns } from "../mod/UserManager";
+import { WmEventMgrIns } from "../mod/EventMgr";
 
 //用户注册
-export async function ApiRegist(call: ApiCall<ReqRegist, ResRegist>) {
+export default async function (call: ApiCall<ReqRegist, ResRegist>) {
     if (call.req.userid.length === 0) {
         call.error('username is empty')
         return;
@@ -36,4 +37,6 @@ export async function ApiRegist(call: ApiCall<ReqRegist, ResRegist>) {
     call.succ({
         result: "success",
     });
+
+    WmEventMgrIns.emit("Online", { userId: userId, conn: call.conn });
 }

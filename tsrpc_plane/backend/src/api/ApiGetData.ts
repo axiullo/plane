@@ -4,7 +4,7 @@ import { ReqGetData, ResGetData } from "../shared/protocols/PtlGetData";
 import { UserMgrIns } from "../mod/UserManager";
 import { DataMgr } from "../mod/DataMgr";
 import { DataHelper } from "../helper/DataHelper";
-import { MsgGetData } from "../shared/protocols/MsgGetData";
+import { MsgSyncData, SyncData, SyncDataOpt } from "../shared/protocols/MsgSyncData";
 
 export default async function (call: ApiCall<ReqGetData, ResGetData>) {
     let conn = call.conn;
@@ -16,22 +16,26 @@ export default async function (call: ApiCall<ReqGetData, ResGetData>) {
     //     return;
     // }
 
+    let syncDatas: MsgSyncData = {
+        datas: [],
+    };
+
     await DataHelper.syncObj.forEach(async function (tbname: string) {
         server.logger.debug("sync data", tbname);
 
         let obj = await DataMgr.instance.getDataObjByName(userId!, tbname);
 
         if (obj) {
-            let msgdata: MsgGetData = {
-                name: obj.tbname,
-                data: obj
-            }
+            let syncdata: SyncData = {
+                tbname: tbname,
+                opt: SyncDataOpt.Set,
+                data: obj,
+            };
 
-            call.conn.sendMsg("getdata", msgdata);
+            syncDatas.datas.push(syncdata);
         }
     })
 
-    call.succ({
-
-    });
+    call.conn.sendMsg("SyncData", syncDatas);
+    call.succ({});
 }

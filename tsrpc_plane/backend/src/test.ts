@@ -47,7 +47,7 @@ class Test {
      * 用户登录
      */
     async testLogin(): Promise<boolean> {
-        let msg: ReqLogin = { userId: this.username, password: this.password };
+        let msg: ReqLogin = { userid: this.username, password: this.password };
 
         return server.callApi("Login", msg).then((ret: ApiReturn<ResLogin>) => {
             server.logger.debug("$$$testLogin", typeof (ret), ret);

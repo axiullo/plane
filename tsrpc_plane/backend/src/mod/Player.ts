@@ -13,11 +13,11 @@ export interface PlayerData {
 export class Player {
     private data!: PlayerData;
 
-    constructor(data: PlayerData) {
-        data = { ...data };
+    constructor(paramData: PlayerData) {
+        this.data = { ...paramData };
     }
 
-    getId(): string {
+    getConnId(): string {
         return this.data.id;
     }
 

@@ -3,26 +3,25 @@ import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserMgrIns } from "../mod/UserManager";
 import { DataMgr, tbname2Obj } from "../mod/DataMgr";
-// import { UserObj } from "../shared/dataobj/UserObj";
 import { DateTimeHelper } from "../shared/helper/DateTimeHelper";
+import { WmEventMgrIns } from "../mod/EventMgr";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     // Error
-    if (call.req.userId.length === 0) {
+    if (call.req.userid.length === 0) {
         call.error('Content is empty')
         return;
     }
 
-    let userId = call.req.userId;
-    // let dbdata = await DataMgr.instance.getData(userId, "user", UserObj, false);
+    let userId = call.req.userid;
     let dbdata = await DataMgr.instance.getData(userId, "user", tbname2Obj["user"], false);
 
     if (!dbdata) {
-        call.error("user not found", {code:1});
+        call.error("user not found", { code: 1 });
         return;
     }
 
-    if(call.req.password != dbdata.password) {
+    if (call.req.password != dbdata.password) {
         call.error("password error");
         return;
     }
@@ -53,7 +52,9 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
 
     // Broadcast
     server.broadcastMsg('UserLogin', {
-        userId: call.req.userId,
+        userid: call.req.userid,
         time: time
     })
+
+    WmEventMgrIns.emit("Online", { userId: userId, conn: call.conn });
 }

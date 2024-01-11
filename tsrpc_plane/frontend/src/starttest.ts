@@ -1,19 +1,27 @@
+import { ServiceType, serviceProto } from "./shared/protocols/serviceProto";
 import { Test, TestStatus } from "./test";
 const eventEmitter = require('events').EventEmitter;
 
 let myevent = new eventEmitter();
 let testIns = new Test();
 testIns.setEventEmitter(myevent);
+// testIns.curStatus = TestStatus.Test;
 
 document.body.setAttribute("class", "app");
 
 function showPage() {
     switch (testIns.curStatus) {
+        case TestStatus.Test:
+            testPage();
+            break;
         case TestStatus.UnLogin:
             showLoginPage();
             break;
         case TestStatus.Regist:
             registPage();
+            break;
+        case TestStatus.Logined:
+            loginedPage();
             break;
         default:
             alert("todo  status=" + testIns.curStatus);
@@ -21,9 +29,15 @@ function showPage() {
     }
 }
 
+function testPage(){
+    loginedPage();
+}
+
 function showLoginPage() {
+    var firstDiv = document.createElement("div");
+
     var useridDiv = document.createElement("div");
-    useridDiv.setAttribute("style", "display:block;");
+    useridDiv.setAttribute("class", "oneblock");
     var nameLabel = document.createElement("label");
     nameLabel.textContent = "userid:";
     useridDiv.appendChild(nameLabel);
@@ -31,44 +45,92 @@ function showLoginPage() {
     var nameInput = document.createElement("input");
     useridDiv.appendChild(nameInput);
 
-    var btnDiv = document.createElement("div");
-    btnDiv.setAttribute("style", "display:block;");
-    var loginBtn = document.createElement("Button");
-    loginBtn.textContent = "Login";
-    loginBtn.addEventListener("click", async function () {
+    var div2 = document.createElement("div");
+    div2.setAttribute("class", "oneblock");
+    var btn = document.createElement("Button");
+    btn.setAttribute("class", "button");
+    btn.textContent = "Login";
+    btn.addEventListener("click", async function () {
         testIns.login(nameInput.value, "123456");
     });
 
-    btnDiv.append(loginBtn);
+    div2.append(btn);
 
-    document.body.appendChild(useridDiv);
-    document.body.append(btnDiv);
+    firstDiv.append(useridDiv);
+    firstDiv.append(div2);
+    document.body.appendChild(firstDiv);
 }
 
 function registPage() {
-    var bodyDiv = document.createElement("div");
-    bodyDiv.setAttribute("style", "display:block;");
-
-
     var useridDiv = document.createElement("div");
-    useridDiv.setAttribute("style", "display:block;");
     var nameLabel = document.createElement("label");
     nameLabel.textContent = "userid:";
     useridDiv.appendChild(nameLabel);
-
     var nameInput = document.createElement("input");
     useridDiv.appendChild(nameInput);
 
-    var loginBtn = document.createElement("Button");
-    loginBtn.textContent = "Regis";
-    loginBtn.addEventListener("click", async function () {
-        testIns.login(nameInput.value, "123456");
+    var btn = document.createElement("Button");
+    btn.textContent = "Regist";
+    btn.addEventListener("click", async function () {
+        testIns.regist(nameInput.value, "123456");
     });
 
-    bodyDiv.append(useridDiv);
-    bodyDiv.append(loginBtn);
-    document.body.appendChild(bodyDiv);
+    useridDiv.append(btn);
+    document.body.appendChild(useridDiv);
 }
+
+function loginedPage() {
+    var firstDiv = document.createElement("div");
+
+    var panelDiv = document.createElement("div");
+    panelDiv.setAttribute("class", "oneblock");
+    var msgnameLabel = document.createElement("label");
+    msgnameLabel.textContent = "消息名称：";
+    panelDiv.append(msgnameLabel);
+    var msgnameSelect = document.createElement("select");
+
+    serviceProto['services'].forEach(function (service) {
+        let option = document.createElement("option");
+        option.value = service.name;
+        option.text = service.name;
+        msgnameSelect.appendChild(option);
+    });
+
+    msgnameSelect.selectedIndex = 4;
+
+    panelDiv.appendChild(msgnameSelect);
+
+    var panelDiv2 = document.createElement("div");
+    panelDiv2.setAttribute("class", "oneblock");
+    var argsLabel = document.createElement("label");
+    argsLabel.textContent = "参数：";
+    panelDiv2.append(argsLabel);
+    var argsText = document.createElement("textarea");
+    panelDiv2.appendChild(argsText);
+
+    var btnDiv = document.createElement("div");
+    btnDiv.setAttribute("class", "oneblock");
+    var btn = document.createElement("Button");
+    btn.textContent = "发送";
+    btn.addEventListener("click", async function () {
+        let msgname = msgnameSelect.options[msgnameSelect.selectedIndex].value;
+
+        let str = argsText.value;
+
+        if (str.length <= 0) {
+            str = "{}";
+        }
+
+        testIns.sendMsg(msgname as (keyof ServiceType['api']), JSON.parse(str));
+    });
+    btnDiv.append(btn);
+
+    firstDiv.append(panelDiv);
+    firstDiv.append(panelDiv2);
+    firstDiv.append(btnDiv);
+    document.body.appendChild(firstDiv);
+}
+
 
 //清除所有组件
 function clearComponents() {

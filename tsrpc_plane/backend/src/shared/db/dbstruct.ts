@@ -1,6 +1,7 @@
-interface base {
+export interface base {
     id: string; //主键
     iid?:string; //二级的主键
+    [key:string]:any; //index赋值
 }
 
 export interface user extends base {

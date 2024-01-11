@@ -7,7 +7,7 @@ import { UserObj } from "../dataobj/UserObj";
 export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
     let room;
 
-    if (call.req.id.length == 0) {
+    if (!call.req.id) {
         room = RoomManagerIns.createRoom();
     } else {
         room = RoomManagerIns.getRoom(call.req.id);
@@ -53,8 +53,6 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
         conn: call.conn,
         name: userdata.name
     });
-
-
 
     call.succ({
         ts: Date.now(),

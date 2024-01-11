@@ -43,3 +43,21 @@ body>h1 {
 .send>button:hover {
     background: #4b80bb;
 }
+
+/* 新界面开始 */
+.oneblock{
+    display: block;
+    margin: auto;
+    border:2px solid red
+}
+
+.oneblock>label{
+    margin-right: 5px;
+}
+
+.oneblock>button{
+    margin: 15px;
+    width: 75px;
+    height: 30px;
+}
+

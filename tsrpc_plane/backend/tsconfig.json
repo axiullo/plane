@@ -16,6 +16,7 @@
     "noUnusedLocals": true, // 有未使用的变量时，抛出错误
     "noUnusedParameters": true, // 有未使用的参数时，抛出错误
     "strictNullChecks": true, //当值为 null 或 undefined 时，您需要在对该值使用方法或属性之前测试这些值
+    "removeComments":true, //编译结果移除注释
   },
   //可以使用 include 和 exclude 选项来指定需要包含的文件和排除的文件：
   "include": [

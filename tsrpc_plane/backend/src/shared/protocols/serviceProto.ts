@@ -1,7 +1,7 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { MsgChat } from './MsgChat';
-import { MsgGetData } from './MsgGetData';
 import { MsgRoomData } from './MsgRoomData';
+import { MsgSyncData } from './MsgSyncData';
 import { MsgUserLogin } from './MsgUserLogin';
 import { ReqGetData, ResGetData } from './PtlGetData';
 import { ReqJoinRoom, ResJoinRoom } from './PtlJoinRoom';
@@ -54,14 +54,14 @@ export interface ServiceType {
     },
     msg: {
         "Chat": MsgChat,
-        "GetData": MsgGetData,
         "RoomData": MsgRoomData,
+        "SyncData": MsgSyncData,
         "UserLogin": MsgUserLogin
     }
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 13,
+    "version": 16,
     "services": [
         {
             "id": 0,
@@ -69,13 +69,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "msg"
         },
         {
-            "id": 8,
-            "name": "GetData",
+            "id": 10,
+            "name": "RoomData",
             "type": "msg"
         },
         {
-            "id": 10,
-            "name": "RoomData",
+            "id": 15,
+            "name": "SyncData",
             "type": "msg"
         },
         {
@@ -145,25 +145,6 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "time",
                     "type": {
                         "type": "Date"
-                    }
-                }
-            ]
-        },
-        "MsgGetData/MsgGetData": {
-            "type": "Interface",
-            "properties": [
-                {
-                    "id": 0,
-                    "name": "name",
-                    "type": {
-                        "type": "String"
-                    }
-                },
-                {
-                    "id": 1,
-                    "name": "data",
-                    "type": {
-                        "type": "Any"
                     }
                 }
             ]
@@ -305,12 +286,72 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "MsgUserLogin/MsgUserLogin": {
+        "MsgSyncData/MsgSyncData": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "userId",
+                    "name": "datas",
+                    "type": {
+                        "type": "Array",
+                        "elementType": {
+                            "type": "Reference",
+                            "target": "MsgSyncData/SyncData"
+                        }
+                    }
+                }
+            ]
+        },
+        "MsgSyncData/SyncData": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "tbname",
+                    "type": {
+                        "type": "String"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "opt",
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgSyncData/SyncDataOpt"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "data",
+                    "type": {
+                        "type": "Any"
+                    }
+                }
+            ]
+        },
+        "MsgSyncData/SyncDataOpt": {
+            "type": "Enum",
+            "members": [
+                {
+                    "id": 0,
+                    "value": 0
+                },
+                {
+                    "id": 1,
+                    "value": 1
+                },
+                {
+                    "id": 2,
+                    "value": 2
+                }
+            ]
+        },
+        "MsgUserLogin/MsgUserLogin": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 2,
+                    "name": "userid",
                     "type": {
                         "type": "String"
                     }
@@ -338,7 +379,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "id",
                     "type": {
                         "type": "String"
-                    }
+                    },
+                    "optional": true
                 }
             ]
         },
@@ -368,8 +410,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Interface",
             "properties": [
                 {
-                    "id": 0,
-                    "name": "userId",
+                    "id": 2,
+                    "name": "userid",
                     "type": {
                         "type": "String"
                     }

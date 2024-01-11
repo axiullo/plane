@@ -3,6 +3,10 @@ import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
 import { DataBase } from '../dataobj/DataBase';
 import { UserObj } from '../dataobj/UserObj';
 import { AppleObj } from '../dataobj/AppleObj';
+import { MsgSyncData, SyncData, SyncDataOpt } from '../shared/protocols/MsgSyncData';
+import { NetHelper } from '../helper/NetHelper';
+
+
 
 interface ClassFactory<T> {
     new(): T;
@@ -128,19 +132,43 @@ export class DataMgr {
             return;
 
         let objs = this.drityObjs.keys();
+        let uid2syncData: Map<string, MsgSyncData> = new Map<string, MsgSyncData>();
 
         for (let obj of objs) {
+            let syncdata: SyncData = {
+                tbname: obj.tbname,
+                opt: SyncDataOpt.Update,
+                data: obj.dirtyData(),
+            };
+
             if (obj.isinsert) {
-                ModDb.instance.insertOne(obj.tbname, obj.dirtyData());
+                ModDb.instance.insertOne(obj.tbname, syncdata.data);
             }
             else if (obj.isdelete) {
+                syncdata.opt = SyncDataOpt.Delete;
                 ModDb.instance.deleteOne(obj.tbname, { id: obj.id });
             }
             else {
-                ModDb.instance.updateOne(obj.tbname, { id: obj.id }, obj.dirtyData());
+                ModDb.instance.updateOne(obj.tbname, { id: obj.id }, syncdata.data);
             }
 
+            let syncDatas = uid2syncData.get(obj.id);
+
+            if (!syncDatas) {
+                uid2syncData.set(obj.id, {
+                    datas: [],
+                });
+
+                syncDatas = uid2syncData.get(obj.id)!;
+            }
+
+            syncDatas.datas.push(syncdata);
             this.drityObjs.delete(obj);
+        }
+
+        //通知客户端数据更新
+        for (let [uid, v] of uid2syncData) {
+            NetHelper.tocli(uid, "SyncData", v);
         }
     }
 

@@ -2,6 +2,6 @@
 // Feel free to delete it
 
 export interface MsgUserLogin {
-    userId: string,
+    userid: string,
     time: Date
 }

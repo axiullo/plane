@@ -30,6 +30,7 @@ export const server = new WsServer(serviceProto, {
     apiTimeout: 200, //api调用超时时间, 毫秒
 });
 
+server.id2Conn = {};
 
 // Initialize before server start
 async function init() {

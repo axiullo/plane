@@ -29,7 +29,7 @@ class UserMgr {
         return true;
     }
 
-    deleteUserByConnId(connId: string): boolean {
+    deleteUserByConnId(connId: string): string|undefined {
         var uid = this._connId2userId.get(connId);
 
         if (uid) {
@@ -37,7 +37,7 @@ class UserMgr {
             this._userId2connId.delete(uid);
         }
 
-        return true;
+        return uid;
     }
 
     hasUserId(uid: string): boolean {

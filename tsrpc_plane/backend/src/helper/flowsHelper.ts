@@ -11,21 +11,22 @@ import { UserMgrIns } from "../mod/UserManager";
 //         例如 Server postConnectFlow 中断，不会阻止 连接建立和后续的消息接收。
 
 export function initflow() {
-    //客户端连接后 链接成功
+    //与客户端链接成功
     server.flows.postConnectFlow.push(conn => {
         server.logger.log(`connect success, ${conn.id}, ${conn.ip}`);
+        server.id2Conn[conn.id]= conn;
         return conn;
     });
 
     //客户端断开连接后 链接断开
     server.flows.postDisconnectFlow.push(info => {
         server.logger.log(`disconnect, ${info.conn.id}, ${info.reason}`);
+        delete server.id2Conn[info.conn.id];
         return info;
     });
 
     //处理收到的数据前
     server.flows.preRecvDataFlow.push(info => {
-        server.logger.log("preRecvDataFlow", info);
         return info
     });
 
@@ -50,7 +51,9 @@ export function initflow() {
     });
 
     /*
+    * API 接口返回结果（call.succ、call.error）之前
     * 在处理Api之后
+    * 返回消息发送之前
     */
     server.flows.preApiReturnFlow.push(info => {
         if (!info.return.isSucc) {
@@ -58,6 +61,23 @@ export function initflow() {
         }
 
         WmEventMgrIns.emit("DataApply", info);
+        return info;
+    });
+
+    /**
+     * 执行 API 接口实现之后
+     */
+    server.flows.postApiCallFlow.push(info => {
+        server.logger.debug("postApiCallFlow " + info.service.name);
+        return info;
+    });
+
+    /**
+     * API 接口返回结果（call.succ、call.error）之后
+     * 返回消息已发送
+     */
+    server.flows.postApiReturnFlow.push(info => {
+        server.logger.debug("postApiReturnFlow " + info.call.service.name);
         return info;
     });
 
@@ -85,5 +105,9 @@ declare module 'tsrpc' {
         userdata: {
             userId: string,
         }
+    }
+
+    export interface WsServer {
+        id2Conn:any
     }
 }
