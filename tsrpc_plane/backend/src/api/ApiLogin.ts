@@ -21,7 +21,7 @@ export default async function (call: ApiCall<ReqLogin, ResLogin>) {
         return;
     }
 
-    if (call.req.password != dbdata.password) {
+    if (call.req.password != dbdata.stdata.password) {
         call.error("password error");
         return;
     }

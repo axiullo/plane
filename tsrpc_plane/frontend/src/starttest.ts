@@ -1,5 +1,5 @@
 import { ServiceType, serviceProto } from "./shared/protocols/serviceProto";
-import { Test, TestStatus } from "./test";
+import { Test, TestStatus } from "./clitest";
 const eventEmitter = require('events').EventEmitter;
 
 let myevent = new eventEmitter();

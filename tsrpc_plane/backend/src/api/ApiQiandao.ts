@@ -11,7 +11,7 @@ export default async function (call: ApiCall<ReqQiandao, ResQiandao>) {
         return;
     }
 
-    if (appleData.isqiandao) {
+    if (appleData.stdata.isqiandao) {
         call.error("has qiandao");
         return;
     }

@@ -6,7 +6,7 @@ export abstract class DataBase {
     /**
      * 索引签名。 通过字符串获得值，缺点安全性低。
      */
-    [key: string]: any;
+    //[key: string]: any;
     /**
      * 表名
      */
@@ -29,14 +29,9 @@ export abstract class DataBase {
     isdelete: boolean = false;
 
     /**
-     * 主键
+     * db数据结构
      */
-    id: string = "";
-
-    /**
-     * mongo _id键值 
-     */
-    _id?: string = "";
+    abstract _stdata: any;
 
     dirtySet: Set<string> = new Set();
     readonly emptyData: any = {};
@@ -51,14 +46,16 @@ export abstract class DataBase {
     public abstract init(): void;
     public abstract load(dbdata: any): void;
     public abstract loaded(): any;
-
+    public get stdata(){
+        return this._stdata;
+    }
     /**
      * 设置属性值
      * @param key 
      * @param value 
      */
     public modify(key: string, value: any): void {
-        if (!this.hasOwnProperty(key)) {
+        if (!this.stdata.hasOwnProperty(key)) {
             throw new Error(`key:${key} not exist`);
         }
 
@@ -66,7 +63,7 @@ export abstract class DataBase {
 
         }
         else {
-            this[key] = value;
+            this.stdata[key] = value;
         }
 
         this.dirtySet.add(key);
@@ -90,7 +87,7 @@ export abstract class DataBase {
         let retData: any = {};
 
         for (let item of this.dirtySet) {
-            retData[item] = this[item];
+            retData[item] = this.stdata[item];
         }
 
         this.dirtySet.clear();

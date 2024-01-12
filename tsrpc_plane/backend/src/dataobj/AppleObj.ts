@@ -5,30 +5,34 @@ import { DataBase } from './DataBase';
 /**
  * 杂项数据
  */
-export class AppleObj extends DataBase implements apple {
-    day0: number
-    isqiandao: boolean = false;
+export class AppleObj extends DataBase {
+    _stdata:apple;
     tbname = "apple";
 
     public constructor() {
         super();
 
-        this.day0 = DateTimeHelper.day0();
-        this.isqiandao = false;
+        this._stdata = {
+            id:"",
+            day0: 0,
+            isqiandao: false
+        }
     }
 
     public init(): void {
-        this.day0 = DateTimeHelper.day0();
-        this.isqiandao = false;
+        this._stdata.day0 =  DateTimeHelper.day0();
+        this._stdata.isqiandao = false;
+
+        // this.day0 =DateTimeHelper.day0();
+        // this.isqiandao = false;
     }
 
     public load(dbdata: any): void {
-        this.day0 = dbdata.day0;
-        this.isqiandao = dbdata.isqiandao;
+        this._stdata = {...dbdata};
     }
 
     public loaded() {
-        if (this.day0 == DateTimeHelper.day0()) {
+        if (this.stdata.day0 == DateTimeHelper.day0()) {
             return;
         }
 

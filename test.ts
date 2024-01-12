@@ -82,18 +82,18 @@ function getstrdata<T extends base>(name: string, cfun:()=>T): T {
   return o as T;
 }
 
-let k = "A"
-var aaa = getstrdata("A", strType[k]);
-aaa.init();
-console.log("11111111111   " + aaa.n);
+// let k = "A"
+// var aaa = getstrdata("A", strType[k]);
+// aaa.init();
+// console.log("11111111111   " + aaa.n);
 
-var bbb = getstrdata("B", strType["B"]);
-bbb.init();
-console.log("bbbbbbbbbbbbb", bbb.m );
+// var bbb = getstrdata("B", strType["B"]);
+// bbb.init();
+// console.log("bbbbbbbbbbbbb", bbb.m );
 
-var ccc = getstrdata("C", strType["C"]);
-ccc.init();
-console.log(ccc.str)
+// var ccc = getstrdata("C", strType["C"]);
+// ccc.init();
+// console.log(ccc.str)
 
 
 function day0() {

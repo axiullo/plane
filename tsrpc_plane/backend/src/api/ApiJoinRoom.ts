@@ -38,7 +38,7 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
         room.reconnect({
             id: call.conn.id,
             conn: call.conn,
-            name: userdata.name
+            name: userdata.stdata.name
         });
 
         call.succ({
@@ -51,7 +51,7 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
     room.addPlayer({
         id: call.conn.id,
         conn: call.conn,
-        name: userdata.name
+        name: userdata.stdata.name
     });
 
     call.succ({

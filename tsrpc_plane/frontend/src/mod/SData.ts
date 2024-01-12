@@ -1,5 +1,8 @@
 import { base } from "../shared/db/dbstruct";
 
+/**
+ * 内存数据
+ */
 class Sdata {
     srvdata: Map<string, base>; //服务器数据
     private static instance: Sdata;

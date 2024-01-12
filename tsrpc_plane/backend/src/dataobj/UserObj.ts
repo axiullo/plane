@@ -5,16 +5,20 @@ import { DataBase } from './DataBase';
 /**
  * 用户数据
  */
-export class UserObj extends DataBase implements user {
+export class UserObj extends DataBase {
+    _stdata: user;
     tbname = "user";
-    userid: string = ""; //用户id
-    createtime: number = 0; //创建时间
-    password: string = ""; //密码
-    lastlogin: number = 0; //上次登录时间
-    name: string = ""; //昵称
 
     constructor() {
         super();
+        this._stdata = {
+            id: "",
+            userid: "",
+            createtime: 0,
+            password: "",
+            lastlogin: 0,
+            name: "",
+        }
     }
 
     /**
@@ -34,11 +38,7 @@ export class UserObj extends DataBase implements user {
      * @param dbdata 数据库数据
      */
     load(dbdata: user): void {
-        this.id = dbdata.id;
-        this.userid = dbdata.userid;
-        this.createtime = dbdata.createtime;
-        this.password = dbdata.password;
-        this.name = dbdata.name;
+        this._stdata = {...dbdata};
     }
 
     /**
@@ -47,5 +47,4 @@ export class UserObj extends DataBase implements user {
     loaded(): void {
 
     }
-
 }

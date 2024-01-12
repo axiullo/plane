@@ -67,7 +67,7 @@ export class DataMgr {
      */
     public async getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): Promise<T | null> {
         let datasmap = this.id2datasMap.get(id);
-
+        
         if (!datasmap) {
             datasmap = new Map<string, DataBase>();
             this.id2datasMap.set(id, datasmap);
@@ -86,13 +86,13 @@ export class DataMgr {
                 dataobj = new cfun();
                 dataobj.init(); //初始化数据
                 dataobj.isnew = true;
-                dataobj.isinsert = true;
+                dataobj.isinsert = true;//插入标记，如果数据有modify更改，则整个插入数据库，否则不进库
             }
             else {
                 dataobj = new cfun();
                 dataobj.load(dbdata); //根据数据库数据创建数据实例
             }
-
+            
             datasmap.set(tbname, dataobj);
         }
 
@@ -146,20 +146,20 @@ export class DataMgr {
             }
             else if (obj.isdelete) {
                 syncdata.opt = SyncDataOpt.Delete;
-                ModDb.instance.deleteOne(obj.tbname, { id: obj.id });
+                ModDb.instance.deleteOne(obj.tbname, { id: obj.stdata.id });
             }
             else {
-                ModDb.instance.updateOne(obj.tbname, { id: obj.id }, syncdata.data);
+                ModDb.instance.updateOne(obj.tbname, { id: obj.stdata.id }, syncdata.data);
             }
 
-            let syncDatas = uid2syncData.get(obj.id);
+            let syncDatas = uid2syncData.get(obj.stdata.id);
 
             if (!syncDatas) {
-                uid2syncData.set(obj.id, {
+                uid2syncData.set(obj.stdata.id, {
                     datas: [],
                 });
 
-                syncDatas = uid2syncData.get(obj.id)!;
+                syncDatas = uid2syncData.get(obj.stdata.id)!;
             }
 
             syncDatas.datas.push(syncdata);
@@ -181,7 +181,7 @@ export class DataMgr {
 
         let objs = this.drityObjs.keys();
         for (let obj of objs) {
-            this.removeCache(obj.id, obj.tbname);
+            this.removeCache(obj.stdata.id, obj.tbname);
         }
 
         this.drityObjs.clear();

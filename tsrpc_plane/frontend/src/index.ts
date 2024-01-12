@@ -1,5 +1,5 @@
 import { Chatroom } from "./Chatroom";
-import { Test } from "./test";
+import { Test } from "./clitest";
 
 
 document.querySelectorAll('.chat-room').forEach(v => {
