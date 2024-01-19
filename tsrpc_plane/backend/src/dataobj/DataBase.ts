@@ -1,3 +1,4 @@
+import { IdCreatorIns } from "../helper/IdCreaterHelper";
 import { DataMgr } from "../mod/DataMgr";
 /**
  * 数据基础类
@@ -11,6 +12,10 @@ export abstract class DataBase {
      * 表名
      */
     abstract tbname: string;
+    /**
+     * 是否是多重结构 iid
+     */
+    static readonly ismulti: boolean = false;
     /**
      * 更新时间
      */
@@ -40,13 +45,17 @@ export abstract class DataBase {
         this.updatets = Date.now();
     }
 
+    public get getismulti() {
+        return DataBase.ismulti;
+    }
+
     /**
      * 初始化
      */
-    public abstract init(): void;
+    public abstract init(iid?:string): void;
     public abstract load(dbdata: any): void;
     public abstract loaded(): any;
-    public get stdata(){
+    public get stdata() {
         return this._stdata;
     }
     /**
@@ -92,5 +101,9 @@ export abstract class DataBase {
 
         this.dirtySet.clear();
         return retData;
+    }
+
+    protected iidcreate(){
+        return IdCreatorIns.getUid();
     }
 }

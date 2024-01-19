@@ -1,22 +1,11 @@
 import { ModDb } from './ModDb';
 import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
 import { DataBase } from '../dataobj/DataBase';
-import { UserObj } from '../dataobj/UserObj';
-import { AppleObj } from '../dataobj/AppleObj';
 import { MsgSyncData, SyncData, SyncDataOpt } from '../shared/protocols/MsgSyncData';
 import { NetHelper } from '../helper/NetHelper';
+import { server } from '..';
 
-
-
-interface ClassFactory<T> {
-    new(): T;
-}
-
-// 类工厂对象
-export let tbname2Obj: { [key: string]: ClassFactory<DataBase> } = {
-    "user": UserObj,
-    "apple": AppleObj,
-};
+type ID2DataMap = Map<string, DataBase>;
 
 /**
  * 数据管理类
@@ -25,7 +14,12 @@ export class DataMgr {
     private static sinstance: DataMgr;
     //数据map， id，tbname表名，obj数据
     //todo：这里是否应该用DataBase取代any。每次转换对象时根据tbname取对应类型。
-    private id2datasMap: Map<string, Map<string, DataBase>>;
+    private id2datasMap!: Map<string, ID2DataMap>;
+    /**
+     * iid数据map
+     * <id, <tbname, <id, obj>>> 结构
+     */
+    private id2datalistMap: Map<string, Map<string, ID2DataMap>>;
 
     /**
      * 脏数据对象们
@@ -33,8 +27,9 @@ export class DataMgr {
     private drityObjs: Map<DataBase, boolean>;
 
     private constructor() {
-        this.id2datasMap = new Map<string, Map<string, DataBase>>();
-        this.drityObjs = new Map<DataBase, boolean>()
+        this.id2datasMap = new Map<string, ID2DataMap>();
+        this.id2datalistMap = new Map<string, Map<string, ID2DataMap>>();
+        this.drityObjs = new Map<DataBase, boolean>();
     };
 
     /**
@@ -48,16 +43,6 @@ export class DataMgr {
         return this.sinstance;
     }
 
-    public async getDataObjByName(id: string, key: string): Promise<DataBase | null> {
-        const factory = tbname2Obj[key];
-
-        if (factory) {
-            let obj = await this.getData(id, key, factory);
-            return obj;
-        }
-        return null;
-    }
-
     /**
      * 获得数据
      * @param {string} id 主键
@@ -67,7 +52,7 @@ export class DataMgr {
      */
     public async getData<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iscreate: boolean = true): Promise<T | null> {
         let datasmap = this.id2datasMap.get(id);
-        
+
         if (!datasmap) {
             datasmap = new Map<string, DataBase>();
             this.id2datasMap.set(id, datasmap);
@@ -76,24 +61,117 @@ export class DataMgr {
         let dataobj = datasmap.get(tbname);
 
         if (!dataobj) {
-            let dbdata = await ModDb.instance.FindOne(tbname, "id", id);
+            dataobj = new cfun();
+
+            if (dataobj.getismulti) {
+
+                let errorMsg = `getData failed! ${tbname} is multi!`;
+                server.logger.error(errorMsg);
+                throw new Error(errorMsg);
+            }
+
+            let dbdata = await ModDb.instance.FindOne(tbname, { "id": id });
 
             if (!dbdata) {
                 if (!iscreate) {
                     return null;
                 }
 
-                dataobj = new cfun();
                 dataobj.init(); //初始化数据
                 dataobj.isnew = true;
                 dataobj.isinsert = true;//插入标记，如果数据有modify更改，则整个插入数据库，否则不进库
             }
             else {
-                dataobj = new cfun();
                 dataobj.load(dbdata); //根据数据库数据创建数据实例
             }
-            
+
             datasmap.set(tbname, dataobj);
+        }
+
+        dataobj.updatets = DateTimeHelper.now();
+        dataobj.loaded();
+
+        if (dataobj.isnew) {
+            dataobj.isnew = false;
+        }
+
+        return dataobj as T;
+    }
+
+    /**
+     * 加载双重id数据列表
+     * @param id 
+     * @param tbname 
+     * @param cfun 
+     * @param iid 
+     * @param iscreate 
+     * @returns 
+     */
+    public async getDataList<T extends DataBase>(id: string, tbname: string, cfun: new () => T): Promise<ID2DataMap> {
+        let datalistmap = this.id2datalistMap.get(id);
+
+        if (!datalistmap) {
+            datalistmap = new Map<string, ID2DataMap>();
+            this.id2datalistMap.set(id, datalistmap);
+        }
+
+        let datalist = datalistmap.get(tbname);
+
+        if (!datalist) {
+            datalist = new Map<string, DataBase>();
+            let dataobj = new cfun(); //为了创建实例取属性
+
+            if (!dataobj.getismulti) {
+                let errorMsg = `getData failed! ${tbname} is not multi!`;
+                server.logger.error(errorMsg);
+                throw new Error(errorMsg);
+            }
+
+            let tmplist = await ModDb.instance.FindList(tbname, "id", id);
+
+            if (tmplist.length > 0) {
+                for (let i = 0; i < tmplist.length; i++) {
+                    dataobj = new cfun();
+                    dataobj.load(tmplist[i]); //根据数据库数据创建数据实例
+                    dataobj.updatets = DateTimeHelper.now();
+                    dataobj.loaded();
+                    datalist!.set(dataobj.stdata.iid, dataobj);
+                }
+            }
+
+            datalistmap.set(tbname, datalist);
+        }
+
+        return datalist;
+    }
+
+    /**
+     * 
+     * @param id 
+     * @param tbname 
+     * @param cfun 
+     * @param iid 
+     * @param iscreate 
+     * @returns 
+     */
+    public async getDataii<T extends DataBase>(id: string, tbname: string, cfun: new () => T, iid: string = "", iscreate: boolean = true): Promise<T | null> {
+        let datalist = await this.getDataList(id, tbname, cfun);
+
+        if (!datalist) {
+            return null;
+        }
+
+        let dataobj = datalist.get(iid);
+
+        if (!dataobj) {
+            if (!iscreate) {
+                return null;
+            }
+
+            dataobj = new cfun();
+            dataobj.init(iid);
+            dataobj.isnew = true;
+            dataobj.isinsert = true;//插入标记，如果数据有modify更改，则整个插入数据库，否则不进库
         }
 
         dataobj.updatets = DateTimeHelper.now();
@@ -126,6 +204,7 @@ export class DataMgr {
 
     /**
      * 数据提交
+     * todo:数据整合操作。
      */
     public async commit() {
         if (this.drityObjs.size <= 0)
@@ -180,6 +259,7 @@ export class DataMgr {
             return;
 
         let objs = this.drityObjs.keys();
+
         for (let obj of objs) {
             this.removeCache(obj.stdata.id, obj.tbname);
         }

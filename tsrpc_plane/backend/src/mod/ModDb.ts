@@ -23,11 +23,8 @@ export class ModDb {
      * 查找
      * @param key 
      */
-    public async FindOne(tbname: string, key: string, v: any): Promise<any> {
-        let condition: any = {};
-        condition[key] = v;
-        let data = await this.db.findOne(tbname, condition);
-
+    public async FindOne(tbname: string, filter:any): Promise<any> {
+        let data = await this.db.findOne(tbname, filter);
         return data;
     }
 
@@ -64,6 +61,17 @@ export class ModDb {
         let result = await this.db.deleteOne(tbname, filter);
         return result;
     }
+
+        /**
+     * 查找
+     * @param key 
+     */
+        public async FindList(tbname: string, key: string, con: any): Promise<any> {
+            let condition: any = {};
+            condition[key] = con;
+            let data = await this.db.findList(tbname, condition);
+            return data;
+        }
 
     // /**
     //  * 查找

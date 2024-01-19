@@ -28,8 +28,8 @@ export class ModMongoDB {
 
     // }
 
-    async findOne(cltName: string, condition: any) {
-        return await this._db.collection(cltName).findOne(condition);
+    async findOne(cltName: string, filter: any) {
+        return await this._db.collection(cltName).findOne(filter);
     }
 
     /**
@@ -67,6 +67,10 @@ export class ModMongoDB {
         let result = await this._db.collection(cltName).updateOne(filter, {$set:data});
         server.logger.debug(result, "condition:", filter, "update data:", data);
         return result;
+    }
+
+    async findList(cltName: string, filter: any){
+        return await this._db.collection(cltName).find(filter).toArray();
     }
 }
 

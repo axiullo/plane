@@ -2,9 +2,10 @@ import { ApiCall } from "tsrpc";
 import { server } from "..";
 import { ReqLogin, ResLogin } from "../shared/protocols/PtlLogin";
 import { UserMgrIns } from "../mod/UserManager";
-import { DataMgr, tbname2Obj } from "../mod/DataMgr";
+import { DataMgr } from "../mod/DataMgr";
 import { DateTimeHelper } from "../shared/helper/DateTimeHelper";
 import { WmEventMgrIns } from "../mod/EventMgr";
+import { tbname2Obj } from "../helper/DataHelper";
 
 export default async function (call: ApiCall<ReqLogin, ResLogin>) {
     // Error
