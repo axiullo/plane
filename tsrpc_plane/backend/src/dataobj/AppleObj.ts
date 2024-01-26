@@ -15,7 +15,8 @@ export class AppleObj extends DataBase {
         this._stdata = {
             id:"",
             day0: 0,
-            isqiandao: false
+            isqiandao: false,
+            roomid: "",
         }
     }
 

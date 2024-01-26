@@ -3,7 +3,7 @@ import { server } from "..";
 import { RoomState, RoomData } from "../shared/module/ModRoom";
 import { WsConnection } from "tsrpc";
 import { PlayerInfo, PlayerState } from "../shared/module/ModPlayerInfo";
-import { GamePlane } from "../shared/module/ModPlane";
+import { GamePlane } from "../shared/module/GamePlane";
 
 //房间类
 class Room {
@@ -33,6 +33,10 @@ class Room {
         this._state = RoomState.Ready;
         this._createTime = Date.now();
         this._game = new GamePlane();
+    }
+
+    get rid(): string {
+        return this._id;
     }
 
     getGame(): GamePlane {
@@ -73,12 +77,12 @@ class Room {
             return false;
         }
 
-        if (this.hasPlayer(data.id)) {
+        if (this.hasPlayer(data.userid)) {
             return false;
         }
 
         this.doAddPlayer(data);
-        this._playerInfos.push({ id: data.id, name: data.name, state: PlayerState.Online });
+        this._playerInfos.push({ id: data.userid, name: data.userid, state: PlayerState.Online });
 
         if (this._players.size == this._numLimit) {
             this.gameStart();
@@ -92,7 +96,7 @@ class Room {
 
     doAddPlayer(data: PlayerData) {
         var player = new Player(data);
-        this._players.set(data.id, player);
+        this._players.set(data.userid, player);
         this._playerConns.push(player.getConn() as WsConnection);
     }
 
@@ -125,16 +129,16 @@ class Room {
 
     /**
      * 移除玩家
-     * @param id 玩家id 
+     * @param uid 玩家id 
      * @returns 
      */
-    removePlayer(id: string) {
-        if (!this.hasPlayer(id)) {
+    removePlayer(uid: string) {
+        if (!this.hasPlayer(uid)) {
             return;
         }
 
-        let pldata = this._players.get(id)!;
-        this._players.delete(id);
+        let pldata = this._players.get(uid)!;
+        this._players.delete(uid);
 
         this._playerConns = this._playerConns.filter(item => item !== pldata.getConn());
     }
@@ -144,10 +148,10 @@ class Room {
      * @param data 
      * @returns 
      */
-    disconnect(id: string) {
-        this.removePlayer(id);
+    disconnect(uid: string) {
+        this.removePlayer(uid);
 
-        let pldata = this._playerInfos.find(item => item.id === id);
+        let pldata = this._playerInfos.find(item => item.id === uid);
 
         if (pldata) {
             pldata.state = PlayerState.Offline;
@@ -160,13 +164,13 @@ class Room {
      * @returns 
      */
     reconnect(data: PlayerData) {
-        if (!this.hasPlayer(data.id)) {
+        if (!this.hasPlayer(data.userid)) {
             return false;
         }
 
         this.doAddPlayer(data)
 
-        let pldata = this._playerInfos.find(item => item.id === data.id);
+        let pldata = this._playerInfos.find(item => item.id === data.userid);
 
         if (pldata) {
             pldata.state = PlayerState.Online;

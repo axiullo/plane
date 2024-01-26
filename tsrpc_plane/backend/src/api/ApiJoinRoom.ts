@@ -2,20 +2,40 @@ import { ApiCall } from "tsrpc";
 import { ReqJoinRoom, ResJoinRoom } from "../shared/protocols/PtlJoinRoom";
 import { RoomManagerIns } from "../mod/RoomManager";
 import { DataMgr } from "../mod/DataMgr";
-import { UserObj } from "../dataobj/UserObj";
+import { tbname2Obj } from "../helper/DataHelper";
 
 export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
+    let reqRoomId = call.req.id;
     let room;
+    let appleData = await DataMgr.instance.getData(call.userdata.userId, "apple", tbname2Obj["apple"]);
 
-    if (!call.req.id) {
+
+    if (!reqRoomId|| reqRoomId.length === 0) {
         room = RoomManagerIns.createRoom();
     } else {
-        room = RoomManagerIns.getRoom(call.req.id);
+        room = RoomManagerIns.getRoom(reqRoomId);
 
         if (!room) {
+            appleData!.stdata.modify("roomid", "");
             call.error("room not found", { code: 1 });
             return;
         }
+    }
+
+    let tmpData = {
+        id: call.conn.id,
+        conn: call.conn,
+        userid: call.userdata.userId
+    }
+
+    if (room.hasPlayer(tmpData.userid)) {
+        room.reconnect(tmpData);
+
+        call.succ({
+            roomData: room.getRoomData(),
+        });
+
+        return;
     }
 
     if (room.isFull()) {
@@ -28,34 +48,14 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
         return;
     }
 
-    let userdata = await DataMgr.instance.getData(call.userdata.userId, "user", UserObj, false);
+    room.addPlayer(tmpData);
+    appleData!.modify("roomid", room.rid);
 
-    if (!userdata) {
-        return call.error("user not found");
-    }
-
-    if (room.hasPlayer(call.conn.id)) {
-        room.reconnect({
-            id: call.conn.id,
-            conn: call.conn,
-            name: userdata.stdata.name
-        });
-
-        call.succ({
-            roomData: room.getRoomData(),
-        });
-
-        return;
-    }
-
-    room.addPlayer({
-        id: call.conn.id,
-        conn: call.conn,
-        name: userdata.stdata.name
-    });
-
-    call.succ({
+    let ret = {
         ts: Date.now(),
         roomData: room.getRoomData(),
-    });
+    };
+
+    call.logger.debug(JSON.stringify(ret.roomData.gamedata));
+    call.succ(ret);
 }

@@ -61,7 +61,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 16,
+    "version": 18,
     "services": [
         {
             "id": 0,
@@ -452,7 +452,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "dir",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/ModPlane/PlaneDirection"
+                        "target": "../module/GamePlane/PlaneDirection"
                     }
                 },
                 {
@@ -471,7 +471,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "../module/ModPlane/PlaneDirection": {
+        "../module/GamePlane/PlaneDirection": {
             "type": "Union",
             "members": [
                 {
@@ -522,14 +522,6 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "enemyUid",
                     "type": {
                         "type": "String"
-                    }
-                },
-                {
-                    "id": 1,
-                    "name": "dir",
-                    "type": {
-                        "type": "Reference",
-                        "target": "../module/ModPlane/PlaneDirection"
                     }
                 },
                 {

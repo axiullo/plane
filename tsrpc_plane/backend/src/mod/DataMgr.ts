@@ -27,8 +27,8 @@ export class DataMgr {
     private drityObjs: Map<DataBase, boolean>;
 
     private constructor() {
-        this.id2datasMap = new Map<string, ID2DataMap>();
-        this.id2datalistMap = new Map<string, Map<string, ID2DataMap>>();
+        this.id2datasMap = new Map();
+        this.id2datalistMap = new Map();
         this.drityObjs = new Map<DataBase, boolean>();
     };
 

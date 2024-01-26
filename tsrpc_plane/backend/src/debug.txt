@@ -1,0 +1,33 @@
+
+加入
+{"id":"DQFXCCRIV-OUR-OYN-BMM"}
+
+布局
+{
+    "roomid": "DQFXCCRIV-OUR-OYN-BMM",
+    "dir": "up",
+    "x": 0,
+    "y": 0
+}
+
+{
+    "roomid": "DQFXCCRIV-OUR-OYN-BMM",
+    "dir": "down",
+    "x": 6,
+    "y": 0
+}
+
+翻
+{
+    "roomid": "DQFXCCRIV-OUR-OYN-BMM",
+    "enemyUid": "2",
+    "x": 0,
+    "y": 0
+}
+
+{
+    "roomid": "DQFXCCRIV-OUR-OYN-BMM",
+    "enemyUid": "1",
+    "x": 0,
+    "y": 0
+}

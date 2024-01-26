@@ -2,7 +2,7 @@
 class IdCreator {
     baseId: number = 1000;
     timeBase: number = Date.UTC(2000, 1, 1, 0, 0, 59);
-    timeStart: number = this.timeBase - Date.now();
+    timeStart: number = Date.now() - this.timeBase;
     serverId: number = 10001; //服务器id
     uidPre: string = "";
 
@@ -22,7 +22,7 @@ class IdCreator {
         21, 22, 23, 24, 25, 26
     ];
 
-    constructor(serverId:number = 10001) {
+    constructor(serverId: number = 10001) {
         this.serverId = serverId;
         this.uidPre = this.getPre(this.serverId);
     }
@@ -38,7 +38,7 @@ class IdCreator {
         return this.uidPre + this.numberToChar(curId);
     }
 
-    private getPre(serverId:number){
+    private getPre(serverId: number) {
         return this.numberToChar(this.timeStart) + "-" + this.numberToChar(serverId) + "-" + this.numberToChar(100 + serverId) + "-";
     }
 

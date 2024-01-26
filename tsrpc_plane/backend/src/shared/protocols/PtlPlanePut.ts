@@ -1,4 +1,4 @@
-import { PlaneDirection } from "../module/ModPlane";
+import { PlaneDirection } from "../module/GamePlane";
 
 export interface ReqPlanePut {
     roomid:string,

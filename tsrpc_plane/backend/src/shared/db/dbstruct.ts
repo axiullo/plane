@@ -15,6 +15,7 @@ export interface user extends base {
 export interface apple extends base {
     day0: number; //
     isqiandao: boolean; //是否签到
+    roomid:string; //房间号
 }
 
 export interface item extends base {

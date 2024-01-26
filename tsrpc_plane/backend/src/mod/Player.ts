@@ -6,7 +6,7 @@ import { BaseConnection } from "tsrpc";
 export interface PlayerData {
     id: string;
     conn: BaseConnection;
-    name: string;
+    userid:string;
 }
 
 //玩家类

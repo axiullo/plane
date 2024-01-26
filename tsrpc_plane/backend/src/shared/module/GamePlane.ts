@@ -10,6 +10,8 @@
  * 记录所有的步骤
  */
 
+import { GameHelper } from "../helper/GameHelper";
+
 /**
  * 方向
  */
@@ -20,7 +22,7 @@ export type PlaneDirection = 'up' | 'left' | 'down' | 'right';
  * 不同方向上的飞机布局
  */
  const Plane: { [key in PlaneDirection]: (number[][]) } = {  //改成这样就可以编译过
-//const Plane: DirPlane = { //编译不过，不知道为什么。
+//const Plane: DirPlane = { //编译不过，不知道为什么。 因为框架暂时还不支持这种格式
     //上
     "up": [
         [0, 1, 0],
@@ -85,12 +87,14 @@ class GamePlane {
     constructor() {
         this.uid2map = new Map<string, Grid[][]>(); //一维y 二维x
         this.uid2PlaneId = new Map<string, number>();
+        //todo 再来个showmap 
     }
 
     getGameData() {
-        return {
-            uid2map: this.uid2map,
-        }
+        let ret = {
+            uid2map: GameHelper.funcMapToObjectStr(this.uid2map),
+        };
+        return ret; 
     }
 
     /**
@@ -159,7 +163,7 @@ class GamePlane {
     }
 
     /**
-     *  放置飞机
+     *  放置飞机, 放置位置以左上角为基准点。
      * @param uid 玩家id
      * @param dir 飞机方向
      * @param x 飞机左上角位置

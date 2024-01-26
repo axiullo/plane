@@ -1,6 +1,6 @@
 import { getClient } from "./getClient";
+import { initflow } from "./helper/flowsHelper";
 import { Sdata } from "./mod/SData";
-import { user } from "./shared/db/dbstruct";
 import { RoomData } from "./shared/module/ModRoom";
 import { SyncDataOpt } from "./shared/protocols/MsgSyncData";
 import { ResJoinRoom } from "./shared/protocols/PtlJoinRoom";
@@ -24,6 +24,8 @@ export class Test {
         let self = this;
         this.curStatus = TestStatus.UnLogin;
 
+        initflow(this.client);
+        
         // Connect at startup
         this.client.connect().then(v => {
             if (!v.isSucc) {
@@ -33,7 +35,7 @@ export class Test {
 
         // Listen Msg
         this.client.listenMsg('UserLogin', v => {
-            console.log(`Logined ${v.userid}, ${v.time}`)
+            this.client.logger?.debug(`Logined ${v.userid}, ${v.time}`);
         })
 
         this.client.listenMsg('SyncData', v => {
