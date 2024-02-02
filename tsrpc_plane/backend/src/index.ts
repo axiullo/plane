@@ -30,7 +30,7 @@ export const server = new WsServer(serviceProto, {
     apiTimeout: 200, //api调用超时时间, 毫秒
 });
 
-server.id2Conn = {};
+server.wmId2Conn = {};
 
 // Initialize before server start
 async function init() {
@@ -42,17 +42,16 @@ async function init() {
     await DBIns.init(config.dbhost, config.dbport, config.dbname);
 
     //初始化操作流
-    initflow();
+    initflow(server);
 };
 
 // Entry function
 async function main() {
     await init();
     await server.start();
+    Game.start();
 
     app.listen(config.httpport);
-
-    Game.start();
 
     process.on('uncaughtException', (err) => {
         server.logger.error('!!!There was an uncaught error', err);

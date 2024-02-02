@@ -16,5 +16,16 @@ export let GameHelper = {
         });
 
         return JSON.stringify(mapToObject);
+    },
+
+    /**
+     * Fisher-Yates（也称为 Knuth）洗牌算法
+     * @param array 
+     */
+     shuffleArray(array: any[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1)); // 随机选取小于等于 i 的整数
+            [array[i], array[j]] = [array[j], array[i]]; // 交换 array[i] 和 array[j]
+        }
     }
 }

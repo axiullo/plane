@@ -1,5 +1,5 @@
 import { ApiReturn } from 'tsrpc';
-import { server } from './';
+import { server } from '.';
 //import { ReqRegist,ResRegist } from './shared/protocols/PtlRegist';
 import { ReqRegist } from './shared/protocols/PtlRegist';
 import { ReqLogin, ResLogin } from "./shared/protocols/PtlLogin";

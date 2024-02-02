@@ -3,10 +3,10 @@ export interface PlayerInfo
     id: string
     name: string
     avatar?: string
-    state:PlayerState
+    state:PlayerStatus
 }
 
-export enum PlayerState
+export enum PlayerStatus
 {
     Online,
     Offline,

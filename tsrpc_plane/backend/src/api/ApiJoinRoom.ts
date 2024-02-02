@@ -9,6 +9,11 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
     let room;
     let appleData = await DataMgr.instance.getData(call.userdata.userId, "apple", tbname2Obj["apple"]);
 
+    let tmpData = {
+        id: call.conn.id,
+        conn: call.conn,
+        userid: call.userdata.userId
+    }
 
     if (!reqRoomId|| reqRoomId.length === 0) {
         room = RoomManagerIns.createRoom();
@@ -20,22 +25,16 @@ export default async function (call: ApiCall<ReqJoinRoom, ResJoinRoom>) {
             call.error("room not found", { code: 1 });
             return;
         }
-    }
 
-    let tmpData = {
-        id: call.conn.id,
-        conn: call.conn,
-        userid: call.userdata.userId
-    }
-
-    if (room.hasPlayer(tmpData.userid)) {
-        room.reconnect(tmpData);
-
-        call.succ({
-            roomData: room.getRoomData(),
-        });
-
-        return;
+        if (room.hasPlayer(tmpData.userid)) {
+            room.reconnect(tmpData);
+    
+            call.succ({
+                roomData: room.getRoomData(),
+            });
+    
+            return;
+        }
     }
 
     if (room.isFull()) {

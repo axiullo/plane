@@ -1,9 +1,9 @@
 import { Player, PlayerData } from "./Player";
 import { server } from "..";
-import { RoomState, RoomData } from "../shared/module/ModRoom";
+import { RoomState, RoomData } from "../shared/mod/ModRoom";
 import { WsConnection } from "tsrpc";
-import { PlayerInfo, PlayerState } from "../shared/module/ModPlayerInfo";
-import { GamePlane } from "../shared/module/GamePlane";
+import { PlayerInfo, PlayerStatus } from "../shared/mod/ModPlayerInfo";
+import { GamePlane } from "../shared/mod/GamePlane";
 
 //房间类
 class Room {
@@ -14,7 +14,7 @@ class Room {
     //房间人数上限
     private _numLimit: number;
     //房间状态
-    private _state: RoomState;
+    private _roomstate: RoomState;
     //创建时间戳
     private _createTime: number;
     //
@@ -30,7 +30,7 @@ class Room {
         this._playerConns = [];
         this._playerInfos = [];
         this._numLimit = num;
-        this._state = RoomState.Ready;
+        this._roomstate = RoomState.Ready;
         this._createTime = Date.now();
         this._game = new GamePlane();
     }
@@ -51,7 +51,7 @@ class Room {
         return {
             id: this._id,
             num: this._players.size,
-            state: this._state,
+            state: this._roomstate,
             numLimit: this._numLimit,
             createTime: this._createTime,
             playerInfos: this._playerInfos,
@@ -65,24 +65,29 @@ class Room {
     }
 
     isReady(): boolean {
-        return this._state == RoomState.Ready;
+        return this._roomstate == RoomState.Ready;
     }
 
     hasPlayer(userId: string): boolean {
-        return this._players.get(userId) != undefined;
+        let pldata = this._playerInfos.find(item => item.id == userId);
+        return pldata != undefined;
     }
 
     addPlayer(data: PlayerData) {
-        if (this.isFull()) {
-            return false;
-        }
-
         if (this.hasPlayer(data.userid)) {
             return false;
         }
 
+        if (this.isFull()) {
+            return false;
+        }
+
         this.doAddPlayer(data);
-        this._playerInfos.push({ id: data.userid, name: data.userid, state: PlayerState.Online });
+        this._playerInfos.push({
+            id: data.userid,
+            name: data.userid,
+            state: PlayerStatus.Online
+        });
 
         if (this._players.size == this._numLimit) {
             this.gameStart();
@@ -101,6 +106,10 @@ class Room {
     }
 
     notify() {
+        if (this._playerConns.length == 0) {
+            return;
+        }
+
         // Broadcast
         server.broadcastMsg('RoomData', {
             data: this.getRoomData()
@@ -109,13 +118,13 @@ class Room {
     }
 
     gameStart() {
-        this._state = RoomState.Start;
+        this._roomstate = RoomState.Start;
         this._game.init([...this._players.keys()]);
         this.notify();
     }
 
     gameOver() {
-        this._state = RoomState.Over;
+        this._roomstate = RoomState.Over;
         this.notify();
     }
 
@@ -125,6 +134,16 @@ class Room {
 
     destroy() {
 
+    }
+
+    /**
+     * 玩家退出房间
+     * @param uid 
+     */
+    exitPlayer(uid: string) {
+        this.removePlayer(uid);
+        this._playerInfos = this._playerInfos.filter(item => item.id != uid);
+        this.notify();
     }
 
     /**
@@ -139,7 +158,6 @@ class Room {
 
         let pldata = this._players.get(uid)!;
         this._players.delete(uid);
-
         this._playerConns = this._playerConns.filter(item => item !== pldata.getConn());
     }
 
@@ -154,8 +172,10 @@ class Room {
         let pldata = this._playerInfos.find(item => item.id === uid);
 
         if (pldata) {
-            pldata.state = PlayerState.Offline;
+            pldata.state = PlayerStatus.Offline;
         }
+
+        this.notify();
     }
 
     /**
@@ -173,7 +193,7 @@ class Room {
         let pldata = this._playerInfos.find(item => item.id === data.userid);
 
         if (pldata) {
-            pldata.state = PlayerState.Online;
+            pldata.state = PlayerStatus.Online;
         }
 
         this.notify();

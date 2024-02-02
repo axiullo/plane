@@ -9,7 +9,6 @@
  * todo:
  * 记录所有的步骤
  */
-
 import { GameHelper } from "../helper/GameHelper";
 
 /**
@@ -21,8 +20,8 @@ export type PlaneDirection = 'up' | 'left' | 'down' | 'right';
 /**
  * 不同方向上的飞机布局
  */
- const Plane: { [key in PlaneDirection]: (number[][]) } = {  //改成这样就可以编译过
-//const Plane: DirPlane = { //编译不过，不知道为什么。 因为框架暂时还不支持这种格式
+const Plane: { [key in PlaneDirection]: (number[][]) } = {  //改成这样就可以编译过
+    //const Plane: DirPlane = { //编译不过，不知道为什么。 因为框架暂时还不支持这种格式
     //上
     "up": [
         [0, 1, 0],
@@ -76,13 +75,27 @@ enum GameState {
     End, //结束
 }
 
+//玩家游戏状态
+enum PlayerGameState {
+    Put,
+    PutFinish,
+    Atk,
+    AtkFinish,
+    Dead,
+}
+
 class GamePlane {
-    map_x: number = 9;
-    map_y: number = 9;
+    readonly map_x: number = 9; //地图的宽
+    readonly map_y: number = 9; //地图的高
+    readonly max_plane: number = 1; //部署的最大飞机数
+
+    state: GameState = GameState.Put;
     uid2map: Map<string, Grid[][]>;
     uid2PlaneId: Map<string, number>; //当前部署的飞机序号
-    uid2Destroyed: Map<string, number> = new Map<string, number>(); //玩家被摧毁的次数
-    state: GameState = GameState.Put;
+    uid2BeDestroyed: Map<string, number> = new Map<string, number>(); //玩家被摧毁的次数
+    uid2PlayerState: Map<string, PlayerGameState> = new Map<string, PlayerGameState>(); //玩家游戏状态
+    uidorder: string[] = []; //玩家顺序，如果玩家死亡，将其从队列中删除
+    curUidIndex: number = 0; //攻击时，当前执行的玩家的索引
 
     constructor() {
         this.uid2map = new Map<string, Grid[][]>(); //一维y 二维x
@@ -93,8 +106,9 @@ class GamePlane {
     getGameData() {
         let ret = {
             uid2map: GameHelper.funcMapToObjectStr(this.uid2map),
+            uid2PlayerState: GameHelper.funcMapToObjectStr(this.uid2PlayerState),
         };
-        return ret; 
+        return ret;
     }
 
     /**
@@ -102,11 +116,17 @@ class GamePlane {
      * @param uids
      */
     init(uids: string[]) {
+        this.state = GameState.Put;
+
         uids.forEach((uid) => {
             this.uid2map.set(uid, Array(this.map_y).fill(null).map(() => Array(this.map_x).fill({ isturn: false, isdestroy: false, uid: "", planeid: -1, ishead: false })));
             this.uid2PlaneId.set(uid, 1);
-            this.uid2Destroyed.set(uid, 0);
-        })
+            this.uid2BeDestroyed.set(uid, 0);
+            this.uid2PlayerState.set(uid, PlayerGameState.Put);
+        });
+
+        this.uidorder = [...uids];
+        GameHelper.shuffleArray(this.uidorder);
     }
 
     /**
@@ -162,6 +182,13 @@ class GamePlane {
         return true;
     }
 
+    checkPlayerState(uid: string, state: PlayerGameState) {
+        if (this.uid2PlayerState.get(uid) == state) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      *  放置飞机, 放置位置以左上角为基准点。
      * @param uid 玩家id
@@ -171,6 +198,14 @@ class GamePlane {
      * @returns 是否成功
      */
     putPlane(uid: string, dir: keyof typeof Plane, x: number, y: number): boolean {
+        if (this.state != GameState.Put) {
+            return false;
+        }
+
+        if (!this.checkPlayerState(uid, PlayerGameState.Put)) {
+            return false;
+        }
+
         let modelplane = Plane[dir];
         let planeW = modelplane[0].length;
         let planeH = modelplane.length;
@@ -205,17 +240,60 @@ class GamePlane {
         }
 
         this.uid2PlaneId.set(uid, curPlaneId + 1);
+
+        if (curPlaneId == this.max_plane) {
+            this.uid2PlayerState.set(uid, PlayerGameState.PutFinish);
+        }
+
+        this.GameNext();
+
         return true;
     }
 
     /**
-     *
+     * 游戏是否进行下一步,改变当前的游戏状态
+     */
+    GameNext() {
+        switch (this.state) {
+            case GameState.Put:
+                let isFinish = true;
+                let values = this.uid2PlayerState.values();
+
+                for (let an of values) {
+                    if (an != PlayerGameState.PutFinish) {
+                        isFinish = false;
+                        break;
+                    }
+                }
+
+                if (isFinish) {
+                    this.state = GameState.Atk;
+                    this.curUidIndex = 0;
+                }
+
+                break;
+            case GameState.Atk:
+                if (this.uidorder.length <= 1) {
+                    this.state = GameState.End;
+                }
+                break;
+        }
+    }
+
+    /**
+     * 翻格子
      * @param uid
      * @param x
      * @param y
      * @returns
      */
     turnGrid(uid: string, enemyUid: string, x: number, y: number) {
+        let curUid = this.uidorder[this.curUidIndex];
+
+        if (curUid != uid) {
+            return false;
+        }
+
         if (!this.isValidPos(x, y)) {
             return false;
         }
@@ -232,9 +310,22 @@ class GamePlane {
 
         if (curGrid.planeid > 0) {
             curGrid.isdestroy = true;
-            let curDestroyNum = this.uid2Destroyed.get(uid)!;
-            this.uid2Destroyed.set(uid, curDestroyNum + 1);
+
+            if (curGrid.ishead) {
+                let curDestroyNum = this.uid2BeDestroyed.get(enemyUid)!;
+                this.uid2BeDestroyed.set(uid, curDestroyNum + 1);
+                this.uidorder = this.uidorder.filter(an => an != uid);
+
+                if (this.uidorder.length <= 1) {
+                    this.GameNext();
+                    return true;
+                }
+
+                this.curUidIndex = this.uidorder.indexOf(uid);
+            }
         }
+
+        this.curUidIndex = (this.curUidIndex + 1) % this.uidorder.length;
 
         return true;
     }
@@ -244,10 +335,10 @@ class GamePlane {
      * @param uid
      * @returns
      */
-    allDestroy(uid: string): boolean {
-        let curDestroyNum = this.uid2Destroyed.get(uid)!;
+    allDestroyByUid(uid: string): boolean {
+        let curDestroyNum = this.uid2BeDestroyed.get(uid)!;
 
-        if (curDestroyNum >= (this.uid2PlaneId.get(uid)! - 1)) {
+        if (curDestroyNum >= this.max_plane) {
             return true;
         }
 

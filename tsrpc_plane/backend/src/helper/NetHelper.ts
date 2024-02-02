@@ -1,5 +1,5 @@
 import { UserMgrIns } from "../mod/UserManager";
-import { server } from "../";
+import { server } from "..";
 import { ServiceType } from "../shared/protocols/serviceProto";
 
 let NetHelper = {
@@ -17,7 +17,7 @@ let NetHelper = {
             return;
         }
 
-        let conn = server.id2Conn[connId];
+        let conn = server.wmId2Conn[connId];
 
         if (!conn) {
             return;

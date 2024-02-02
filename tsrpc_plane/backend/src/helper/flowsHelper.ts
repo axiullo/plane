@@ -1,4 +1,4 @@
-import { server } from "..";
+import { WsServer } from "tsrpc";
 import { WmEventMgrIns } from "../mod/EventMgr";
 import { UserMgrIns } from "../mod/UserManager";
 // import { HttpConnection } from "tsrpc";
@@ -10,18 +10,18 @@ import { UserMgrIns } from "../mod/UserManager";
 //     所有 Post Flow 的中断，不会中断 后续的 TSRPC 工作流
 //         例如 Server postConnectFlow 中断，不会阻止 连接建立和后续的消息接收。
 
-export function initflow() {
+export function initflow(server: WsServer) {
     //与客户端链接成功
     server.flows.postConnectFlow.push(conn => {
         server.logger.log(`connect success, ${conn.id}, ${conn.ip}`);
-        server.id2Conn[conn.id]= conn;
+        server.wmId2Conn[conn.id] = conn;
         return conn;
     });
 
     //客户端断开连接后 链接断开
     server.flows.postDisconnectFlow.push(info => {
         server.logger.log(`disconnect, ${info.conn.id}, ${info.reason}`);
-        delete server.id2Conn[info.conn.id];
+        delete server.wmId2Conn[info.conn.id];
         return info;
     });
 
@@ -107,7 +107,7 @@ declare module 'tsrpc' {
         }
     }
 
-    export interface WsServer {
-        id2Conn:any
+    export interface BaseServer {
+        wmId2Conn: any //id2链接
     }
 }

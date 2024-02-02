@@ -1,6 +1,6 @@
 //
 import { Db, MongoClient } from "mongodb";
-import { server } from "../";
+import { server } from "..";
 
 export class ModMongoDB {
     private _db!: Db;

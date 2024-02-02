@@ -61,7 +61,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 18,
+    "version": 19,
     "services": [
         {
             "id": 0,
@@ -157,12 +157,12 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "data",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/ModRoom/RoomData"
+                        "target": "../mod/ModRoom/RoomData"
                     }
                 }
             ]
         },
-        "../module/ModRoom/RoomData": {
+        "../mod/ModRoom/RoomData": {
             "type": "Interface",
             "properties": [
                 {
@@ -177,7 +177,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "state",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/ModRoom/RoomState"
+                        "target": "../mod/ModRoom/RoomState"
                     }
                 },
                 {
@@ -208,7 +208,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                         "type": "Array",
                         "elementType": {
                             "type": "Reference",
-                            "target": "../module/ModPlayerInfo/PlayerInfo"
+                            "target": "../mod/ModPlayerInfo/PlayerInfo"
                         }
                     }
                 },
@@ -221,7 +221,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "../module/ModRoom/RoomState": {
+        "../mod/ModRoom/RoomState": {
             "type": "Enum",
             "members": [
                 {
@@ -238,7 +238,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "../module/ModPlayerInfo/PlayerInfo": {
+        "../mod/ModPlayerInfo/PlayerInfo": {
             "type": "Interface",
             "properties": [
                 {
@@ -268,12 +268,12 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "state",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/ModPlayerInfo/PlayerState"
+                        "target": "../mod/ModPlayerInfo/PlayerState"
                     }
                 }
             ]
         },
-        "../module/ModPlayerInfo/PlayerState": {
+        "../mod/ModPlayerInfo/PlayerState": {
             "type": "Enum",
             "members": [
                 {
@@ -400,7 +400,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "roomData",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/ModRoom/RoomData"
+                        "target": "../mod/ModRoom/RoomData"
                     },
                     "optional": true
                 }
@@ -452,7 +452,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "dir",
                     "type": {
                         "type": "Reference",
-                        "target": "../module/GamePlane/PlaneDirection"
+                        "target": "../mod/GamePlane/PlaneDirection"
                     }
                 },
                 {
@@ -471,7 +471,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "../module/GamePlane/PlaneDirection": {
+        "../mod/GamePlane/PlaneDirection": {
             "type": "Union",
             "members": [
                 {
