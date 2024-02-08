@@ -111,10 +111,13 @@ class Room {
         }
 
         // Broadcast
-        server.broadcastMsg('RoomData', {
-            data: this.getRoomData()
-        },
-            this._playerConns);
+        server.broadcastMsg(
+            'RoomData',
+            {
+                data: this.getRoomData()
+            },
+            this._playerConns
+        );
     }
 
     gameStart() {
@@ -197,6 +200,20 @@ class Room {
         }
 
         this.notify();
+    }
+
+    /**
+     * 游戏操作
+     * @param operation 
+     * @param arags 
+     */
+    gameOpetaion(operation: string, arags: Object) {
+        if (this._game.doOperation(operation, arags)) {
+            this.notify();
+            return true;
+        }
+
+        return false;
     }
 }
 

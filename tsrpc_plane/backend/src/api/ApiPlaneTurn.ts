@@ -18,7 +18,12 @@ export default async function (call: ApiCall<ReqPlaneTurn, ResPlaneTurn>) {
         return;
     }
 
-    let issucc = room.getGame().turnGrid(userid, enemyUid, call.req.x, call.req.y);
+    let issucc = room.gameOpetaion("turn", {
+        userid: userid,
+        enemyUid: enemyUid,
+        x: call.req.x,
+        y: call.req.y
+    });
 
     if (!issucc) {
         call.error("turn failed");

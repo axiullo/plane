@@ -6,21 +6,26 @@ import { RoomManagerIns } from "../mod/RoomManager";
 export default async function (call: ApiCall<ReqPlanePut, ResPlanePut>) {
     let room = RoomManagerIns.getRoom(call.req.roomid);
 
-    if(!room){
+    if (!room) {
         call.error("not find room");
         return;
     }
 
     let userid = call.userdata.userId;
 
-    if(!room.hasPlayer(userid)){
+    if (!room.hasPlayer(userid)) {
         call.error("room has no player");
         return;
     }
-    
-    let isput = room.getGame().putPlane(userid, call.req.dir, call.req.x, call.req.y);
 
-    if(!isput){
+    let isput = room.gameOpetaion("put", {
+        userid: userid,
+        dir: call.req.dir,
+        x: call.req.x,
+        y: call.req.y
+    });
+
+    if (!isput) {
         call.error("put failed");
         return;
     }

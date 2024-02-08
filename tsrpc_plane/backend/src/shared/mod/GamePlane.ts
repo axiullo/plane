@@ -9,6 +9,7 @@
  * todo:
  * 记录所有的步骤
  */
+import { server } from "../..";
 import { GameHelper } from "../helper/GameHelper";
 
 /**
@@ -95,7 +96,7 @@ class GamePlane {
     uid2BeDestroyed: Map<string, number> = new Map<string, number>(); //玩家被摧毁的次数
     uid2PlayerState: Map<string, PlayerGameState> = new Map<string, PlayerGameState>(); //玩家游戏状态
     uidorder: string[] = []; //玩家顺序，如果玩家死亡，将其从队列中删除
-    curUidIndex: number = 0; //攻击时，当前执行的玩家的索引
+    curAtkUidIndex: number = 0; //攻击时，当前执行的玩家的索引
 
     constructor() {
         this.uid2map = new Map<string, Grid[][]>(); //一维y 二维x
@@ -103,10 +104,17 @@ class GamePlane {
         //todo 再来个showmap 
     }
 
+    /**
+     * 
+     * @returns 
+     */
     getGameData() {
         let ret = {
+            state: this.state,
             uid2map: GameHelper.funcMapToObjectStr(this.uid2map),
             uid2PlayerState: GameHelper.funcMapToObjectStr(this.uid2PlayerState),
+            uidorder: this.uidorder,
+            curAtkUidIndex: this.curAtkUidIndex,
         };
         return ret;
     }
@@ -182,6 +190,12 @@ class GamePlane {
         return true;
     }
 
+    /**
+     * 
+     * @param uid 
+     * @param state 
+     * @returns 
+     */
     checkPlayerState(uid: string, state: PlayerGameState) {
         if (this.uid2PlayerState.get(uid) == state) {
             return true;
@@ -268,7 +282,7 @@ class GamePlane {
 
                 if (isFinish) {
                     this.state = GameState.Atk;
-                    this.curUidIndex = 0;
+                    this.curAtkUidIndex = 0;
                 }
 
                 break;
@@ -276,6 +290,9 @@ class GamePlane {
                 if (this.uidorder.length <= 1) {
                     this.state = GameState.End;
                 }
+                break;
+            default:
+                server.logger.error("Invalid state: " + this.state);
                 break;
         }
     }
@@ -288,7 +305,7 @@ class GamePlane {
      * @returns
      */
     turnGrid(uid: string, enemyUid: string, x: number, y: number) {
-        let curUid = this.uidorder[this.curUidIndex];
+        let curUid = this.uidorder[this.curAtkUidIndex];
 
         if (curUid != uid) {
             return false;
@@ -321,11 +338,11 @@ class GamePlane {
                     return true;
                 }
 
-                this.curUidIndex = this.uidorder.indexOf(uid);
+                this.curAtkUidIndex = this.uidorder.indexOf(uid);
             }
         }
 
-        this.curUidIndex = (this.curUidIndex + 1) % this.uidorder.length;
+        this.curAtkUidIndex = (this.curAtkUidIndex + 1) % this.uidorder.length;
 
         return true;
     }
@@ -363,7 +380,23 @@ class GamePlane {
             }
         }
     }
-}
 
+    doOperation(operation: string, arags: any) {
+        let result = true;
+
+        switch (operation) {
+            case "put":
+                result = this.putPlane(arags.uid, arags.dir, arags.x, arags.y);
+            case "turn":
+                result = this.turnGrid(arags.uid, arags.dir, arags.x, arags.y);
+                break;
+                default:
+                    server.logger.error("error operation " + operation);
+                    break;
+        }
+
+        return result;
+    }
+}
 
 export { GamePlane }
