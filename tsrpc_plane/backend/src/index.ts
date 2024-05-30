@@ -10,14 +10,14 @@ import "./helper/EventsHelper"; //导入监听事件处理
 import { Game } from "./mod/Game";
 
 // Create the httpServer
-const app = express();
+const webapp = express();
 
-app.get('/', (req: express.Request, res: express.Response) => {
+webapp.get('/', (req: express.Request, res: express.Response) => {
     console.log(req.get('content-type'), req.get('contenttype'), req.ip, req.protocol);
     res.send('Hello, world!');
 });
 
-app.get("/server", (_, res: express.Response) => {
+webapp.get("/server", (_, res: express.Response) => {
     res.send("connection count:" + server.connections.length);
 });
 
@@ -51,7 +51,7 @@ async function main() {
     await server.start();
     Game.start();
 
-    app.listen(config.httpport);
+    webapp.listen(config.httpport);
 
     process.on('uncaughtException', (err) => {
         server.logger.error('!!!There was an uncaught error', err);
