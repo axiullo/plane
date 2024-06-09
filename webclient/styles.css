@@ -1,0 +1,39 @@
+/* CSS 样式可以根据需要自行调整 */
+.alert-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+.alert-box {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    padding: 10px 20px;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+}
+
+#output {
+    width: 100%;
+    height: 650px;
+    /* 设置固定高度 */
+    border: 1px solid #ccc;
+    overflow: auto;
+    /* 当内容溢出时显示滚动条 */
+    padding: 10px;
+}
+
+.bold {
+    font-weight: bold;
+}

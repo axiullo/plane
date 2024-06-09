@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebClient</title>
+    <link rel="stylesheet" href="styles.css"> <!-- 引入 CSS 文件 -->
+</head>
+
+<body>
+    <div style="margin: 10px;">
+        <label class="bold">服务器地址:</label>
+        <input id="serverhost" value="127.0.0.1">
+        <label class="bold">端口:</label>
+        <input id="port" value="5000">
+    </div>
+
+    <div style="margin: 10px;">
+        <label>userid:</label>
+        <input id="userid" value="1"></input>
+        <button id="loginBtn" onclick="connect()">登录</button>
+        <button id="disconnectBtn" onclick="disconnect()" disabled>断开</button>
+    </div>
+
+    <div style="margin: 10px;">
+        <label class="bold">协议列表：</label>
+        <select id="protocolList" onchange="SetProtocol(this)" style="padding: 5px;font-size: 18px;"></select>
+    </div>
+
+    <div>
+        <label class="bold">协议Json对象串:</label>
+        <textarea id="protocol" style="width: 30%;">{"pktDefName":"CSGetSdata"}</textarea>
+        <button onclick="OnExampleClick()">举个栗子</button>
+        <div style="margin-left: 150px;">
+            <button id="send" onclick="OnSendClick()"
+                style="display: block;font-size: 1.5em;padding: 10px 20px;">发送</button>
+        </div>
+    </div>
+
+    <div>
+        <label class="bold">历史记录:</label>
+        <div>
+            <table id="history">
+                <tbody id="historyBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div style="solid black; margin: 10px; background-color: #f0f0f0;">
+        <label class="bold">接收消息:</label>
+        <div id="output"></div>
+    </div>
+
+    <div class="alert-container" id="alertContainer">
+        <div class="alert-box" id="alertBox">
+            <span class="close-btn" onclick="closeAlert()">&times;</span>
+            <div id="alertMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        var sdata = {};
+        var clientSocket;
+        var outputList = [];
+        // 获取输出容器的 DOM 元素
+        const outputContainer = document.getElementById("output");
+        const protocolList = document.getElementById("protocolList");
+        const protocolText = document.getElementById("protocol");
+        const sendBtn = document.getElementById("send");
+        sendBtn.disabled = true;
+        var historyList = [];
+        var historyMax = 5;
+        var ignoreInsert = false;
+
+        InitProtoList();
+
+        //初始化协议内容
+        function InitProtoList() {
+            // Create options dynamically
+            const options = [
+                { value: '{"pktDefName":"CSCreatePayOrder","caty":2, "payid":"shop_jinbi_4", "customdata":"{\\"caty\\":\\"jinbi\\",\\"index\\":3}"}', text: "创建本地充值订单" },
+                { value: '{"pktDefName":"CSCheat", "method":"Pay", "arg":"{\\\"order_id\\\":\\\"663edc6a881277ad1c48b2d7\\\",\\\"pay_id\\\":\\\"shop_jinbi_4\\\"}"}', text: "作弊充值回调" },
+                { value: '{"pktDefName":"CSPuzzleWildcardChange", pieceid:101}', text: "拼图万能卡兑换" },
+                { value: '{"pktDefName":"CSPuzzleAskPiece",others:[\"1\"], pieceid:101}', text: "向好友索要碎片" },
+                { value: '{"pktDefName":"CSChangeChengjiuList",leibie:0, pos2Id:{0:101}}', text: "修改佩戴的成就列表" },
+            ];
+
+            // Loop through the options array and create options
+            options.forEach((option) => {
+                const opt = document.createElement("option");
+                opt.value = option.value;
+                opt.textContent = option.text;
+                protocolList.appendChild(opt);
+            });
+        }
+
+        function connect() {
+            var host = document.getElementById("serverhost").value;
+            var port = document.getElementById("port").value;
+            var url = "ws://" + host + ":" + port;
+            console.log("Connecting to WebSocket server:", url);
+            outputContainer.innerHTML = "Connecting to WebSocket server: " + url;
+
+            // 创建 WebSocket 对象并连接到服务器
+            clientSocket = new WebSocket(url + "/wsweb");
+            clientSocket.binaryType = 'arraybuffer'; // 设置接收数据类型为 ArrayBuffer
+
+            // 当连接建立时触发
+            clientSocket.onopen = function (event) {
+                console.log("WebSocket connection established.");
+                outputContainer.innerHTML += "<br>WebSocket connection established.";
+                outputContainer.innerHTML += "<br>";
+
+                Login();
+                SetLogin(true);
+            };
+
+            // 当收到服务器发送的消息时触发
+            clientSocket.onmessage = function (event) {
+                //console.log("Message from server:", event.data);
+                const receivedArrayBuffer = event.data;
+                decodeMsg(event.data);
+            };
+
+            // 当连接关闭时触发
+            clientSocket.onclose = function (event) {
+                console.log("WebSocket connection closed:", event);
+                outputContainer.innerHTML += "<br>WebSocket connection closed.";
+                SetLogin(false);
+            };
+
+            // 当发生错误时触发
+            clientSocket.onerror = function (event) {
+                console.error("WebSocket error:", event);
+                outputContainer.innerHTML += "<br>WebSocket error occurred.";
+            };
+        }
+
+        //发送消息
+        function sendMessage(senddata) {
+            var str = JSON.stringify(senddata);
+            // 创建 TextEncoder 对象
+            const encoder = new TextEncoder();
+            // 将字符串编码为 UTF-8 字节
+            const jsonBuffer = encoder.encode(str);
+            clientSocket.send(jsonBuffer);
+
+            var str1 = `<span style="color: green;">[send] ${str}`;
+            outputContainer.innerHTML += '<br>' + str1;
+            outputContainer.innerHTML += "<br>";
+        }
+
+        // 在内容被添加后，将滚动条滚动到底部
+        function scrollToBottom() {
+            outputContainer.scrollTop = outputContainer.scrollHeight;
+        }
+
+        function decodeMsg(receivedArrayBuffer) {
+            // 将 ArrayBuffer 转换为字符串
+            const textDecoder = new TextDecoder('utf-8');
+            const jsonString = textDecoder.decode(receivedArrayBuffer);
+            console.log("Message from server:", jsonString);
+            // 解析字符串为 JSON 对象
+            const jsonObject = JSON.parse(jsonString);
+            console.log('Received JSON object:', jsonObject);
+
+            var str = "[receive] " + jsonString;
+            outputList.push(jsonObject);
+            outputContainer.innerHTML += "<br>" + str;
+            outputContainer.innerHTML += "<br>";
+            // 自动滚动到底部
+            scrollToBottom();
+
+            parseMsg(jsonObject);
+        }
+
+        //解析消息
+        function parseMsg(dataObj) {
+            //协议号
+            switch (dataObj.pktDef) {
+                case 41915://SCLogin
+                    sdata.psid = dataObj.psid;
+
+                    var str = '{"pktDefName":"CSGetSdata"}'; //document.getElementById("protocol").value;
+                    var senddata = JSON.parse(str);
+                    sendMessage(senddata);
+                    break;
+
+                case 62947: //PktParamUpdate
+                    break;
+            }
+        }
+
+        function disconnect() {
+            clientSocket.close();
+            outputContainer.innerHTML += "<br>WebSocket disconnect.";
+        }
+
+        //设置登录状态
+        function SetLogin(isLogin) {
+            var loginBtn = document.getElementById("loginBtn");
+            loginBtn.disabled = isLogin;
+
+            var disconnectBtn = document.getElementById("disconnectBtn");
+            disconnectBtn.disabled = !isLogin;
+
+            sendBtn.disabled = !isLogin;
+        }
+
+        function Login(socket) {
+            var usedid = document.getElementById("userid").value
+            var data = {};
+            data.user_id = usedid;
+            data.token = usedid;
+
+            var senddata = {};
+            senddata.pktDefName = "CSLogin";
+            senddata.json = JSON.stringify(data);
+            sendMessage(senddata);
+        }
+
+        function OnSendClick() {
+            var msgstr = document.getElementById("protocol").value;
+            var fixedJsonString = fixJson(msgstr);
+            console.log(msgstr);
+            console.log(fixedJsonString);
+            var senddata = JSON.parse(fixedJsonString);
+            sendMessage(senddata);
+
+            if(!ignoreInsert){
+                InsertHistory(msgstr);
+            }
+        }
+
+        function SetProtocol() {
+            ignoreInsert = false;
+            const selectedValue = protocolList.value;
+            SetProtocolText(selectedValue);
+        }
+
+        function SetProtocolText(value) {
+            protocolText.value = value;
+        }
+
+        function InsertHistory(msgStr) {
+            historyList.unshift(msgStr);
+
+            if (historyList.length > historyMax) {
+                historyList.pop();
+            }
+
+            // 生成表格行
+            var historyBodyObj = document.getElementById("historyBody");
+            historyBodyObj.innerHTML = "";
+            for (var i = 0; i < historyList.length; i++) {
+                var row = document.createElement("tr");
+                row.innerHTML = "<td>" + historyList[i] + "</td>";
+                row.addEventListener("mouseover", function () {
+                    this.style.backgroundColor = '#8d94f7';
+                });
+                row.addEventListener("mouseout", function () {
+                    this.style.backgroundColor = "";
+                });
+
+                row.addEventListener("click", function () {
+                    // 在鼠标点击时选择某一条记录
+                    var selectedMsg = this.getElementsByTagName("td")[0].innerText;
+                    // 在这里可以进行其他操作，例如更新表单或执行其他逻辑
+                    console.log(selectedMsg);
+                    SetProtocolText(selectedMsg);
+                    ignoreInsert = true;
+                });
+
+                historyBodyObj.appendChild(row);
+            }
+        }
+
+        function OnExampleClick() {
+            var content = `
+            以此为例：{"pktDefName":"CSSwipeCard", "bet":1,"cardid":1001}
+
+            协议说明:
+            1. 需要填json格式的字符串数据；
+            2. 需要额外添加pktDefName字段，值为协议的名称，如"CSSwipeCard"；
+            3. 其他字段为协议本身字段；
+            4. “协议列表”中添加了一些协议，方便快速填入协议内容。
+            5. 如果“协议列表”中没有，可以自行在文本框中填写协议内容。
+            6. 其他协议后续添加。
+            7. 有任何其他问题，请先自己解决，谢谢。
+            `;
+
+            alert(content);
+        }
+
+        // 注册 window.onerror 事件处理程序
+        window.onerror = function (message, source, lineno, colno, error) {
+            // 处理错误，例如输出错误信息到控制台或者弹出错误提示
+            //console.error("An error occurred:", message , "at" , source , "line" , lineno , "column" , colno , error;);
+            var content = "An error occurred:<br\>" + message + "<br\> at " + source + " <br\> line: " + lineno + " column: " + colno + "<br\>";
+            showAlert(content);
+            // 返回 true 告诉浏览器不再执行默认的错误处理行为
+            return true;
+        };
+
+        // 弹出错误提示
+        function showAlert(content) {
+            var alertMessageP = document.getElementById("alertMessage");
+            // alertMessageP.textContent = content;
+            alertMessageP.innerHTML = content; //innerHTML 会做html解析
+
+            var alertContainer = document.getElementById("alertContainer");
+            alertContainer.style.display = "block";
+        }
+
+        function closeAlert() {
+            var alertContainer = document.getElementById("alertContainer");
+            alertContainer.style.display = "none";
+        }
+
+        function fixJson(jsonString) {
+            // 使用正则表达式匹配不带双引号的键名，并添加双引号
+            jsonString = jsonString.replace(/([{,]\s*)([A-Za-z0-9_]+)\s*:/g, '$1"$2":');
+            return jsonString;
+        }
+    </script>
+</body>
+
+</html>
