@@ -1,0 +1,11 @@
+{
+  "name": "cocosclient",
+  "uuid": "9ead2c14-55b0-4e71-bf17-0b73bce68f21",
+  "creator": {
+    "version": "3.8.3"
+  },
+  "dependencies": {
+    "tsrpc-browser": "^3.4.16",
+    "tsrpc-miniapp": "^3.4.16"
+  }
+}
