@@ -61,7 +61,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 19,
+    "version": 20,
     "services": [
         {
             "id": 0,
@@ -268,12 +268,12 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "state",
                     "type": {
                         "type": "Reference",
-                        "target": "../mod/ModPlayerInfo/PlayerState"
+                        "target": "../mod/ModPlayerInfo/PlayerStatus"
                     }
                 }
             ]
         },
-        "../mod/ModPlayerInfo/PlayerState": {
+        "../mod/ModPlayerInfo/PlayerStatus": {
             "type": "Enum",
             "members": [
                 {

@@ -20,6 +20,6 @@ let DateTimeHelper = {
         date.setHours(0, 0, 0, 0); // 将时间设置为当日的0点
         return Math.floor(date.getTime() / 1000); // 获取0点的时间戳
     }
-}
+};
 
 export { DateTimeHelper };

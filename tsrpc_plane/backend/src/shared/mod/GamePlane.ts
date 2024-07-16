@@ -9,8 +9,8 @@
  * todo:
  * 记录所有的步骤
  */
-import { server } from "../..";
-import { GameHelper } from "../helper/GameHelper";
+
+import { funcMapToObjectStr, shuffleArray } from './GameHelperFunc';
 
 /**
  * 方向
@@ -85,7 +85,7 @@ enum PlayerGameState {
     Dead,
 }
 
-class GamePlane {
+export class GamePlane {
     readonly map_x: number = 9; //地图的宽
     readonly map_y: number = 9; //地图的高
     readonly max_plane: number = 1; //部署的最大飞机数
@@ -111,8 +111,8 @@ class GamePlane {
     getGameData() {
         let ret = {
             state: this.state,
-            uid2map: GameHelper.funcMapToObjectStr(this.uid2map),
-            uid2PlayerState: GameHelper.funcMapToObjectStr(this.uid2PlayerState),
+            uid2map: funcMapToObjectStr(this.uid2map),
+            uid2PlayerState: funcMapToObjectStr(this.uid2PlayerState),
             uidorder: this.uidorder,
             curAtkUidIndex: this.curAtkUidIndex,
         };
@@ -134,7 +134,7 @@ class GamePlane {
         });
 
         this.uidorder = [...uids];
-        GameHelper.shuffleArray(this.uidorder);
+        shuffleArray(this.uidorder);
     }
 
     /**
@@ -292,7 +292,7 @@ class GamePlane {
                 }
                 break;
             default:
-                server.logger.error("Invalid state: " + this.state);
+                //server.logger.error("Invalid state: " + this.state);
                 break;
         }
     }
@@ -390,13 +390,11 @@ class GamePlane {
             case "turn":
                 result = this.turnGrid(arags.uid, arags.dir, arags.x, arags.y);
                 break;
-                default:
-                    server.logger.error("error operation " + operation);
-                    break;
+            default:
+                //server.logger.error("error operation " + operation);
+                break;
         }
 
         return result;
     }
 }
-
-export { GamePlane }

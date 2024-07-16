@@ -16,8 +16,9 @@ export default <TsrpcConfig>{
     sync: [
         {
             from: 'src/shared',
-            to: '../frontend/src/shared',
-            type: 'symlink'     // Change this to 'copy' if your environment not support symlink
+            //to: '../frontend/src/shared',
+            to: '../cocosclient/assets/scripts/shared',
+            type: 'copy'     // Change this to 'copy' if your environment not support symlink
         }
     ],
     // Dev server
