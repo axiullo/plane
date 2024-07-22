@@ -933,6 +933,18 @@
     "__prefab": {
       "__id__": 41
     },
+    "quickClose": false,
+    "showType": 2,
+    "cache": false,
+    "minHand": {
+      "__id__": 13
+    },
+    "secHand": {
+      "__id__": 3
+    },
+    "hourHand": {
+      "__id__": 23
+    },
     "_id": ""
   },
   {
