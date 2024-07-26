@@ -1,4 +1,4 @@
-import { __private, director, instantiate, log, Node, Prefab, resources, UITransform, view, Asset } from "cc";
+import { __private, director, instantiate, log, Node, Prefab, resources, UITransform, view, Asset, debug } from "cc";
 import { UIShowTypes, UIView } from "./ui/UIView";
 import { UIConf } from "./UIConfig";
 
@@ -18,8 +18,8 @@ export interface UIInfo {
     resCache?: string[];
 }
 
-export class UIManager {
-    private static _instance: UIManager = null;
+export class UIMgr {
+    private static _instance: UIMgr = null;
 
     /** 背景UI（有若干层UI是作为背景UI，而不受切换等影响）*/
     private BackGroundUI = 0;
@@ -40,9 +40,9 @@ export class UIManager {
     /** 是否正在关闭UI */
     private isClosing = false;
 
-    public static getInstance(): UIManager {
+    public static get inst(): UIMgr {
         if (this._instance == null) {
-            this._instance = new UIManager();
+            this._instance = new UIMgr();
         }
         return this._instance;
     }
@@ -158,7 +158,10 @@ export class UIManager {
         // 添加到场景中
         let child = director.getScene()!.getChildByName('Canvas');
         child!.addChild(uiView.node);
-        uiCom!.priority = uiInfo.zOrder || this.UIStack.length;
+        debug(`Canvas add ui node ${uiInfo.uiId}`);
+
+        //uiCom!.priority = uiInfo.zOrder || this.UIStack.length;
+        uiView.node.setSiblingIndex(uiInfo.zOrder || this.UIStack.length);
 
         // 刷新其他UI
         this.updateUI();
@@ -176,6 +179,10 @@ export class UIManager {
 
         // 执行onOpen回调
         uiView.onOpen(fromUIID, uiArgs);
+
+        //第一次展示
+        uiView.firstShow();
+        debug(`ui onOpen ${uiInfo.uiId}`);
     }
 
 
@@ -258,7 +265,6 @@ export class UIManager {
         let uiView: UIView | null = this.UICache[uiId];
         if (uiView) {
             //todo 这里是不应该加上新的参数
-            //uiView.init(uiArgs);
             completeCallback(uiView);
             return;
         }
@@ -283,6 +289,7 @@ export class UIManager {
 
             // 检查组件获取错误
             uiView = uiNode.getComponent(UIView);
+
             if (null == uiView) {
                 log(`getOrCreateUI getComponent ${uiId} faile, path: ${uiPath}`);
                 uiNode.destroy();
@@ -290,7 +297,6 @@ export class UIManager {
                 return;
             }
 
-            uiView!.init(uiArgs);
             completeCallback(uiView);
             uiView!.cacheAsset(prefab);
         }
@@ -418,5 +424,14 @@ export class UIManager {
         }
 
         return null;
+    }
+
+    public getTopUI(): UIView | null {
+        if (this.UIStack.length <= 0) {
+            return null;
+        }
+
+        let uiInfo = this.UIStack[this.UIStack.length - 1];
+        return uiInfo.uiView;
     }
 }

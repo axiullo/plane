@@ -52,7 +52,7 @@
         "_value": false
       },
       "physics-2d": {
-        "_value": true,
+        "_value": false,
         "_option": "physics-2d-box2d"
       },
       "physics-2d-box2d": {
@@ -142,7 +142,6 @@
       "intersection-2d",
       "meshopt",
       "particle-2d",
-      "physics-2d-box2d",
       "profiler",
       "spine",
       "tiled-map",

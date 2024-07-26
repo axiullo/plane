@@ -13,7 +13,13 @@ export enum UIShowTypes {
 
 @ccclass('UIView')
 export class UIView extends Component {
+    public get uiname(): string {
+        return this.constructor.name;
+    }
+
     private resCache = new Set<Asset>();
+    protected fromUIId: number = 0; //
+    protected isfirst: boolean = true;
 
     /** 快速关闭 */
     @property
@@ -25,15 +31,18 @@ export class UIView extends Component {
     @property
     cache: boolean = false;
 
-    /**
-     * 当界面被创建时回调，生命周期内只调用
-     * @param args 可变参数
-     */
-    public init(...args: any): void {
 
+    public onOpen(fromUI: number, ...uiArgs: any): void {
+        this.fromUIId = fromUI;
     }
 
-    public onOpen(fromUI: number, ...args: any): void {
+    //第一次展示, 没有特殊操作子类不需要实现
+    public firstShow() {
+        this.isfirst = false;
+        this.show();
+    }
+
+    public show() {
 
     }
 
@@ -51,7 +60,7 @@ export class UIView extends Component {
     }
 
     /**
- * 缓存资源
+ * 缓存资源  暂时没啥用
  * @param asset 
  */
     public cacheAsset(asset: Asset) {
