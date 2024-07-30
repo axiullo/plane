@@ -13,7 +13,7 @@ export enum UIShowTypes {
 
 @ccclass('UIView')
 export class UIView extends Component {
-    public get uiname(): string {
+    public get uiName(): string {
         return this.constructor.name;
     }
 
@@ -30,7 +30,6 @@ export class UIView extends Component {
     /** 缓存选项 */
     @property
     cache: boolean = false;
-
 
     public onOpen(fromUI: number, ...uiArgs: any): void {
         this.fromUIId = fromUI;
@@ -51,15 +50,6 @@ export class UIView extends Component {
     }
 
     /**
-     * 当界面被置顶时回调，Open时并不会回调该函数
-     * @param preID 前一个ui
-     * @param args 可变参数，
-     */
-    public onTop(preID: number, ...args: any): void {
-
-    }
-
-    /**
  * 缓存资源  暂时没啥用
  * @param asset 
  */
@@ -71,8 +61,8 @@ export class UIView extends Component {
     }
 
     /**
- * 组件销毁时自动释放所有keep的资源
- */
+     * * 组件销毁时自动释放所有keep的资源
+     *  */
     public onDestroy() {
         this.releaseAssets();
     }
@@ -86,6 +76,23 @@ export class UIView extends Component {
         });
         this.resCache.clear();
     }
+
+    // 开始隐藏
+    public hiding() {
+        this.onHiding()
+    }
+
+    // 隐藏完成
+    public hided() {
+        this.onHided()
+    }
+
+    // 销毁
+    public doDestroy() {
+        this.onDestroy()
+        this.destroy()
+    }
+
+    protected onHiding() { }
+    protected onHided() { }
 }
-
-

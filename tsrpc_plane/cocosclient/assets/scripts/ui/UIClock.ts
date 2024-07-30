@@ -1,5 +1,5 @@
 import { _decorator, log, Node, game, Game, Label, EventHandler, Event, math, Button, Sprite, ProgressBar } from 'cc';
-import { UIView } from './UIView';
+import { UIView } from '../UIView';
 import { WButton } from '../components/WButton';
 import { WProgressBar } from '../components/WProgressBar';
 const { ccclass, property } = _decorator;
@@ -39,18 +39,14 @@ export class UIClock extends UIView {
     }
 
     onLoad(): void {
-        log("onLoad", this.name, this.uiname);
+        log("onLoad", this.name, this.uiName);
 
         this.title.string = "时钟";
 
         //https://docs.cocos.com/creator/3.8/api/zh/class/Button
         this.resetBtn.transition = Button.Transition.SCALE;
-        const clickEventHandler = new EventHandler();
-        clickEventHandler.target = this.node; // 这个 node 节点是你的事件处理代码组件所属的节点
-        clickEventHandler.component = 'UIClock';// 这个是脚本类名
-        clickEventHandler.handler = 'OnResetClick';
-        clickEventHandler.customEventData = 'hello';
-        this.resetBtn.clickEvents.push(clickEventHandler);
+        this.resetBtn.setOnClick(this.node, "UIClock", "OnResetClick", 'hello');
+
         this.resetBtn.setText("重置");
         this.resetBtn.setFontSize(50);
         this.resetBtn.node.on(Node.EventType.MOUSE_ENTER, this.BtnEnter); //监听事件

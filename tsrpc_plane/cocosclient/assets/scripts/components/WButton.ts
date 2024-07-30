@@ -1,5 +1,5 @@
-import { _decorator, Button, Label, log, math, Sprite, UITransform } from "cc";
-const { ccclass,menu } = _decorator;
+import { _decorator, Button, EventHandler, Label, log, math, Sprite, UITransform, Node } from "cc";
+const { ccclass, menu } = _decorator;
 
 @ccclass('WButton')
 @menu('#WUIComponent/WButton')
@@ -8,12 +8,9 @@ export class WButton extends Button {
 
     constructor() {
         super();
-        log(`WButton constructor`);
     }
 
     protected onLoad(): void {
-        log(`WButton onLoad`);
-
         this.label?.getComponent(UITransform).setContentSize(this.node.getComponent(UITransform).contentSize);
     }
 
@@ -23,6 +20,15 @@ export class WButton extends Button {
         }
 
         return this._label;
+    }
+
+    setOnClick(node: Node, component: string, handler: string, customEventData: string = ""): void {
+        const clickEventHandler = new EventHandler();
+        clickEventHandler.target = node; // 这个 node 节点是你的事件处理代码组件所属的节点
+        clickEventHandler.component = component;// 这个是脚本类名
+        clickEventHandler.handler = handler;
+        clickEventHandler.customEventData = customEventData;
+        this.clickEvents.push(clickEventHandler);
     }
 
     setText(str: string): void {
