@@ -3,12 +3,13 @@ export enum UIID {
     UIClock,
     UIMain,
     UIBag,
+    PanelYellow,
 }
 
 export interface UIConf {
     prefab: string;
     preventTouch?: boolean;
-    bundlename?: string;
+    bundleName?: string;
 }
 
 export class UIConfig {
@@ -17,5 +18,6 @@ export class UIConfig {
         [UIID.UIClock]: { prefab: "prefab/clock", preventTouch: true },
         [UIID.UIMain]: { prefab: "prefab/uimain" },
         [UIID.UIBag]: { prefab: "prefab/uibag" },
+        [UIID.PanelYellow]: { prefab: "prefab/PanelYellow" },
     }
 }

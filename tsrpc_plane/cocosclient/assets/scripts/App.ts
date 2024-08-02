@@ -1,6 +1,6 @@
 import { log, Node } from 'cc';
 import LayerMgr from "./view/LayerMgr"
-import { UIMgr } from './UIMgr';
+import { UIMgr } from './view/UIMgr';
 import { UIConfig,UIID } from './UIConfig';
 
 export default class App {
@@ -26,6 +26,6 @@ export default class App {
     // 初始化框架
     private static initFramework() {
         LayerMgr.init()
-        UIMgr.inst.initUIConf(UIConfig.UICF, this._uiMainUIId);
+        UIMgr.inst.initUIConf( this._uiMainUIId);
     }
 }

@@ -1,8 +1,9 @@
 import { _decorator, Component, Node } from 'cc';
 import { WButton } from '../components/WButton';
-import { UIMgr } from '../UIMgr';
+import { UIMgr } from '../view/UIMgr';
 import { UIID } from '../UIConfig';
-import { UIView } from '../UIView';
+import { UIView } from '../view/UIView';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UIBag')

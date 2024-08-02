@@ -1,10 +1,11 @@
-import { __private, director, instantiate, log, Node, Prefab, resources, UITransform, view, Asset, debug, error } from "cc";
-import { UIShowTypes, UIView } from "./UIView";
-import { UIConf } from "./UIConfig";
-import ResMgr from "./ResMgr";
-import AppUtil from "./AppUtil";
-import LayerMgr from "./view/LayerMgr";
-import AppConstants from "./AppConstants";
+import { __private, director, instantiate, log, Node, Prefab, resources, UITransform, view, Asset, debug, error, tween, Tween } from "cc";
+import { UIShowStyle, UIShowTypes, UIView } from "./UIView";
+import { UIConf, UIConfig } from "../UIConfig";
+import ResMgr from "../ResMgr";
+import AppUtil from "../AppUtil";
+import LayerMgr from "./LayerMgr";
+import AppConstants from "../AppConstants";
+import TopBlock from "./TopBlock";
 
 
 export type ProgressCallback = __private._cocos_asset_asset_manager_deprecated__LoadProgressCallback;
@@ -30,8 +31,6 @@ export class UIMgr {
     /** 背景UI（有若干层UI是作为背景UI，而不受切换等影响）*/
     private BackGroundUI = 0;
 
-    /** UI配置 */
-    private UIConf: { [key: number]: UIConf } = {};
     /** UI界面栈（{UIID + UIView + UIArgs}数组）*/
     private UIStack: UIInfo[] = [];
     /** UI待打开列表 */
@@ -60,18 +59,10 @@ export class UIMgr {
      * 初始化所有UI的配置对象
      * @param conf 配置对象
      * */
-    public initUIConf(conf: { [key: number]: UIConf }, mainid: number): void {
-        this.UIConf = conf;
+    public initUIConf(mainid: number): void {
         this._uiMainUIId = mainid;
-    }
-
-    /**
-    * 设置或覆盖某uiId的配置
-    * @param uiId 要设置的界面id
-    * @param conf 要设置的配置
-    */
-    public setUIConf(uiId: number, conf: UIConf): void {
-        this.UIConf[uiId] = conf;
+        this.UICache = {};
+        this.UIStack = [];
     }
 
     /** 打开界面并添加到界面栈中 */
@@ -81,7 +72,17 @@ export class UIMgr {
             return;
         }
 
+        // if (uiId == this._uiMainUIId) {
+        //     //清理所有UI
+        //     for (let i = 0; i < this.UIStack.length; i++) {
+        //         this.hideUI(this.UIStack[i]);
+        //     }
+
+        //     this.UIStack = [];
+        // }
+
         let uiIndex = this.getUIIndex(uiId);
+
         if (-1 != uiIndex) {
             // 重复打开了同一个界面，直接回到该界面
             this.closeToUI(uiId, uiArgs);
@@ -100,6 +101,8 @@ export class UIMgr {
             return;
         }
 
+        TopBlock.show();
+
         this.isOpening = true;
 
         // 设置UI的zOrder
@@ -107,12 +110,12 @@ export class UIMgr {
         this.UIStack.push(uiInfo);
 
         // 先屏蔽点击
-        if (this.UIConf[uiId].preventTouch) {
+        if (UIConfig.UICF[uiId].preventTouch) {
             uiInfo.preventNode = this.preventTouch(uiInfo.zOrder);
         }
 
         // 预加载资源，并在资源加载完成后自动打开界面
-        this.getOrCreateUI(uiId, progressCallback, (uiView: UIView | null): void => {
+        this.getOrCreateUI(uiId, (uiView: UIView | null): void => {
             // 如果界面已经被关闭或创建失败
             if (uiInfo.isClose || null == uiView) {
                 log(`getOrCreateUI ${uiId} failed!
@@ -127,9 +130,10 @@ export class UIMgr {
             }
 
             // 打开UI，执行配置
-            this.onUIOpen(uiId, uiView, uiInfo, uiArgs);
+            this.onUIOpen(uiId, uiView, uiInfo);
             this.isOpening = false;
-        }, uiArgs);
+            TopBlock.hide();
+        });
     }
 
     /**
@@ -139,7 +143,7 @@ export class UIMgr {
  * @param uiInfo 界面栈对应的信息结构
  * @param uiArgs 界面初始化参数
  */
-    private onUIOpen(uiId: number, uiView: UIView, uiInfo: UIInfo, uiArgs: any) {
+    private onUIOpen(uiId: number, uiView: UIView, uiInfo: UIInfo) {
         if (null == uiView) {
             return;
         }
@@ -147,9 +151,10 @@ export class UIMgr {
         // 激活界面
         uiInfo.uiView = uiView;
         uiView.node.active = true;
-        AppUtil.logWithColor("$$$ ui node active");
+        AppUtil.debugWithColor("$$$ ui node active");
 
         let uiCom = uiView.getComponent(UITransform);
+
         if (!uiCom) {
             uiCom = uiView.addComponent(UITransform);
         }
@@ -172,7 +177,7 @@ export class UIMgr {
             }, backGround);
         }
 
-        AppUtil.logWithColor("$$$ ui node setlayer before");
+        AppUtil.debugWithColor("$$$ ui node setlayer before");
         // 添加到场景中
         LayerMgr.setLayer(uiView.node, AppConstants.viewLayer.UI);
 
@@ -197,13 +202,95 @@ export class UIMgr {
         //     this.uiOpenBeforeDelegate(uiId, fromUIID);
         // }
 
+        if (uiView.showStyle == UIShowStyle.Normal || uiView.duration <= 0 || !this._current) {
+            this.onUIOpenNormal(uiInfo, fromUIID);
+        }
+        else {
+            this.openFadeIn(uiInfo, fromUIID);
+        }
+    }
+
+    private onUIOpenNormal(uiInfo: UIInfo, fromUIID: number) {
+        let uiView = uiInfo.uiView;
+        uiView.opacity = 255;
+
         // 执行onOpen回调
-        uiView.onOpen(fromUIID, uiArgs);
+        uiView.onOpen(uiInfo.uiId, fromUIID, uiInfo.uiArgs);
 
         //第一次展示
         uiView.firstShow();
-        AppUtil.logWithColor(`ui onOpen ${uiInfo.uiId}`);
+        AppUtil.debugWithColor(`ui onOpen ${uiInfo.uiId}`);
         UIMgr.inst.showUIAfter(uiInfo);
+    }
+
+    private openFadeIn(uiInfo: UIInfo, fromUIID: number) {
+        let uiView = uiInfo.uiView;
+        uiView.opacity = 0;
+
+        tween(uiView).to(uiView.duration, { opacity: 255 }).call(() => {
+            // 执行onOpen回调
+            uiView.onOpen(uiView.uiId, fromUIID, uiInfo.uiArgs);
+
+            //第一次展示
+            uiView.firstShow();
+            AppUtil.debugWithColor(`ui onOpen ${uiInfo.uiId}`);
+            UIMgr.inst.showUIAfter(uiInfo);
+        }).start();
+    }
+
+    /**
+    * 加载一个UI的prefab，成功加载了一个prefab之后
+    * @param uiId 界面id
+    * @param processCallback 加载进度回调
+    * @param completeCallback 加载完成回调
+    * @param uiArgs 初始化参数
+    */
+    private async getOrCreateUI(uiId: number, completeCallback: (uiView: UIView | null) => void): Promise<void> {
+        // 如果找到缓存对象，则直接返回
+        let uiView: UIView | null = this.UICache[uiId];
+
+        if (uiView) {
+            completeCallback(uiView);
+            return;
+        }
+
+        // 找到UI配置
+        let uiPath = UIConfig.UICF[uiId].prefab;
+        if (null == uiPath) {
+            log(`getOrCreateUI ${uiId} failed, prefab conf not found!`);
+            completeCallback(null);
+            return;
+        }
+
+        const [prefab, err] = await AppUtil.asyncWrap<Prefab>(ResMgr.load(UIConfig.UICF[uiId].bundleName, uiPath)); //this.loadUIPrefab(uiPath);
+
+        if (err) {
+            error(`loadUIPrefab failed uiPath=${uiPath}, ${err.message}`);
+            completeCallback(null);
+            return;
+        }
+
+        let uiNode: Node = instantiate(prefab);
+        AppUtil.debugWithColor("$$$  create ui node");
+
+        if (null == uiNode) {
+            error(`getOrCreateUI instantiate ${uiId} faile, path: ${uiPath}`);
+            completeCallback(null);
+            return;
+        }
+
+        // 检查组件获取错误
+        uiView = uiNode.getComponent(UIView);
+
+        if (null == uiView) {
+            error(`getOrCreateUI getComponent ${uiId} failed,uiView null, path: ${uiPath}`);
+            uiNode.destroy();
+            completeCallback(null);
+            return;
+        }
+
+        completeCallback(uiView);
+        uiView!.cacheAsset(prefab);
     }
 
     /** 根据界面显示类型刷新显示 */
@@ -216,7 +303,7 @@ export class UIMgr {
             this.UIStack[showIndex].uiView!.node.active = true;
             if (UIShowTypes.UIFullScreen == mode) {
                 break;
-            } 
+            }
             else if (UIShowTypes.UISingle == mode) {
                 for (let i = 0; i < this.BackGroundUI; ++i) {
                     if (this.UIStack[i]) {
@@ -227,12 +314,13 @@ export class UIMgr {
                 break;
             }
         }
-        
+
         // 隐藏不应该显示的部分UI
         for (let hide: number = hideIndex; hide < showIndex; ++hide) {
             this.UIStack[hide].uiView!.node.active = false;
         }
     }
+
 
     public getUIIndex(uiId: number): number {
         for (let index = this.UIStack.length - 1; index >= 0; index--) {
@@ -242,6 +330,7 @@ export class UIMgr {
                 return index;
             }
         }
+
         return -1;
     }
 
@@ -253,6 +342,7 @@ export class UIMgr {
                 return index;
             }
         }
+
         return -1;
     }
 
@@ -337,60 +427,7 @@ export class UIMgr {
         return node;
     }
 
-    /**
- * 加载一个UI的prefab，成功加载了一个prefab之后
- * @param uiId 界面id
- * @param processCallback 加载进度回调
- * @param completeCallback 加载完成回调
- * @param uiArgs 初始化参数
- */
-    private async getOrCreateUI(uiId: number, processCallback: ProgressCallback | null, completeCallback: (uiView: UIView | null) => void, uiArgs: any): Promise<void> {
-        // 如果找到缓存对象，则直接返回
-        // let uiView: UIView | null = this.UICache[uiId];
-        // if (uiView) {
-        //     //todo 这里是不应该加上新的参数
-        //     completeCallback(uiView);
-        //     return;
-        // }
 
-        // 找到UI配置
-        let uiPath = this.UIConf[uiId].prefab;
-        if (null == uiPath) {
-            log(`getOrCreateUI ${uiId} failed, prefab conf not found!`);
-            completeCallback(null);
-            return;
-        }
-
-        const [prefab, err] = await AppUtil.asyncWrap<Prefab>(ResMgr.load(this.UIConf[uiId].bundlename, uiPath)); //this.loadUIPrefab(uiPath);
-
-        if (err) {
-            error(`loadUIPrefab failed uiPath=${uiPath}, ${err.message}`);
-            completeCallback(null);
-            return;
-        }
-
-        let uiNode: Node = instantiate(prefab);
-        AppUtil.logWithColor("$$$  create ui node");
-
-        if (null == uiNode) {
-            error(`getOrCreateUI instantiate ${uiId} faile, path: ${uiPath}`);
-            completeCallback(null);
-            return;
-        }
-
-        // 检查组件获取错误
-        let uiView = uiNode.getComponent(UIView);
-
-        if (null == uiView) {
-            error(`getOrCreateUI getComponent ${uiId} failed,uiView null, path: ${uiPath}`);
-            uiNode.destroy();
-            completeCallback(null);
-            return;
-        }
-
-        completeCallback(uiView);
-        uiView!.cacheAsset(prefab);
-    }
 
     /**
  * 加载UI预制体
@@ -463,7 +500,6 @@ export class UIMgr {
 
         let close = () => {
             this.isClosing = false;
-            uiView!.onClose();
 
             // 显示之前的界面
             if (preUIInfo && preUIInfo.uiView && this.isTopUI(preUIInfo.uiId)) {
@@ -471,16 +507,23 @@ export class UIMgr {
                 preUIInfo.uiView.node.active = true;
                 preUIInfo.uiView.show();
                 this.showUIAfter(preUIInfo);
+
+                if (preUIInfo.uiView.duration) {
+                    tween(uiView).to(preUIInfo.uiView.duration, { opacity: 0 }).call(() => this.hideUI(uiInfo)).start();
+                }
+            }
+            else {
+                uiView!.onClose();
             }
 
             if (uiView!.cache) {
                 this.UICache[uiId] = uiView!;
                 uiView!.node.removeFromParent();
-                log(`uiView removeFromParent ${uiInfo!.uiId}`);
+                debug(`uiView removeFromParent ${uiInfo!.uiId}`);
             } else {
                 uiView!.releaseAssets();
                 uiView!.node.destroy();
-                log(`uiView destroy ${uiInfo!.uiId}`);
+                debug(`uiView destroy ${uiInfo!.uiId}`);
             }
         }
 
@@ -529,5 +572,21 @@ export class UIMgr {
 
     private showUIAfter(current: UIInfo) {
         this._current = current
+    }
+
+    /** 判断是否当前 UI */
+    public isAlive(uiCls: any): boolean {
+        const viewName = AppUtil.getUIName(uiCls)
+
+        return this._current != null && viewName == this._current.uiView.uiName;
+    }
+
+    /** 更新 UI */
+    public updateView(uiCls: any, ...args: any[]): boolean {
+        if (!this.isAlive(uiCls))
+            return false
+
+        this._current.uiView.updateView(args);
+        return true
     }
 }

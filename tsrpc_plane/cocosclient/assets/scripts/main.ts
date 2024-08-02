@@ -1,10 +1,12 @@
-import { _decorator, Component, Game, game, instantiate, log, Node, Prefab, sys } from 'cc';
+import { _decorator, Component, error, Game, game, instantiate, log, Node, Prefab, sys } from 'cc';
 const { ccclass, property } = _decorator;
 import { ModNet } from './mod/modnet';
-import { UIMgr } from './UIMgr';
+import { UIMgr } from './view/UIMgr';
 import { UIID } from './UIConfig';
 import { AudioMgr } from './AudioMgr';
 import App from './App';
+import { UIMain } from './ui/UIMain';
+import { UIBag } from './ui/UIBag';
 
 @ccclass('main')
 export class main extends Component {
@@ -36,12 +38,25 @@ export class main extends Component {
 
     start() {
         //ModNet.getInstance().connect();
-        UIMgr.inst.open(UIID.UIMain);
 
-        //this.scheduleOnce(() => App.showNode(LayerMgr.canvasNode), 1)
+        UIMgr.inst.open(UIID.UIMain);
 
         //todo 不能同时播放多个文件
         AudioMgr.inst.play("bg");
+
+        // 5 秒后调用
+        // this.scheduleOnce(() => {
+        //     if (!UIMgr.inst.updateView(UIMain, '血量-10', '体力-5')) {
+        //         error('更新 UIMain 失败')
+        //     }
+        // }, 5)
+
+        // // 10 秒后调用
+        // this.scheduleOnce(() => {
+        //     if (!UIMgr.inst.updateView(UIBag, '血量+10', '金币-10')) {
+        //         error('更新 UIBag 失败')
+        //     }
+        // }, 10)
 
         // setTimeout(() => {
         //     AudioMgr.inst.playOneShot("player");

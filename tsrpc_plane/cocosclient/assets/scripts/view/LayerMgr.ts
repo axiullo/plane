@@ -66,7 +66,7 @@ export default class LayerMgr {
             node.parent = layerNode
         }
 
-        AppUtil.logWithColor("$$$ ui node set parent");
+        AppUtil.debugWithColor("$$$ ui node set parent");
 
         node.setSiblingIndex(this._zIndex++);
     }

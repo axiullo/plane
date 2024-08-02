@@ -1,7 +1,7 @@
 import { _decorator, log, Node, game, Game, Label, EventHandler, Event, math, Button, Sprite, ProgressBar } from 'cc';
-import { UIView } from '../UIView';
 import { WButton } from '../components/WButton';
 import { WProgressBar } from '../components/WProgressBar';
+import { UIView } from '../view/UIView';
 const { ccclass, property } = _decorator;
 
 const MsMax = 1000;
@@ -34,8 +34,8 @@ export class UIClock extends UIView {
     private curhour: number = 0; //
     private setTs: number = 0; //设置的时间戳
 
-    public onOpen(fromUI: number, ...uiArgs: any): void {
-        this.fromUIId = fromUI;
+    public onOpen(uiId: number, ...uiArgs: any): void {
+        this.uiId = uiId;
     }
 
     onLoad(): void {
