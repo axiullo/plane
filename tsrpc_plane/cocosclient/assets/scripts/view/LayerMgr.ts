@@ -4,12 +4,16 @@ import AppUtil from "../AppUtil"
 
 
 export default class LayerMgr {
+    private static viewLayer:number;
+
     // 层级及对应节点
     private static _layerMap: Map<number, Node> = new Map()
     private static _zIndex: number = 0
 
     // 初始化层级
-    public static init() {
+    public static init(viewLayer:number) {
+        this.viewLayer = viewLayer;
+
         // 框架初始化和切换场景后都会调用, 所以要清除之前的数据
         this._layerMap.clear()
 
@@ -41,6 +45,7 @@ export default class LayerMgr {
 
         layer = new Node(name)
         layer.parent = this.canvasNode;
+        layer.layer = this.viewLayer;
         layer.setSiblingIndex(value);
 
         // 挂载 Widget 组件, 保持跟 Canvas 一样大小
@@ -66,7 +71,7 @@ export default class LayerMgr {
             node.parent = layerNode
         }
 
-        AppUtil.debugWithColor("$$$ ui node set parent");
+        //AppUtil.debugWithColor("$$$ ui node set parent");
 
         node.setSiblingIndex(this._zIndex++);
     }

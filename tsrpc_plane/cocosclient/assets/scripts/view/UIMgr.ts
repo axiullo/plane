@@ -427,8 +427,6 @@ export class UIMgr {
         return node;
     }
 
-
-
     /**
  * 加载UI预制体
  * @param uiName UI的名称

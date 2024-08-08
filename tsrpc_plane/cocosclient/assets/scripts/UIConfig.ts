@@ -4,6 +4,8 @@ export enum UIID {
     UIMain,
     UIBag,
     PanelYellow,
+    PanelGreen,
+    PanelRed
 }
 
 export interface UIConf {
@@ -19,5 +21,7 @@ export class UIConfig {
         [UIID.UIMain]: { prefab: "prefab/uimain" },
         [UIID.UIBag]: { prefab: "prefab/uibag" },
         [UIID.PanelYellow]: { prefab: "prefab/PanelYellow" },
+        [UIID.PanelGreen]: { prefab: "prefab/PanelGreen", bundleName: "b1" },
+        [UIID.PanelRed]: { prefab: "_panels/PanelRed", bundleName: "null" },
     }
 }

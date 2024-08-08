@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Tween, tween, Vec3 } from 'cc';
+import { _decorator, tween, Vec3 } from 'cc';
 import PanelBase from '../view/PanelBase';
 import { WButton } from '../components/WButton';
 import PanelMgr from '../view/PanelMgr';
@@ -6,8 +6,8 @@ import { UIID } from '../UIConfig';
 import AppConstants from '../AppConstants';
 const { ccclass, property } = _decorator;
 
-@ccclass('PanelYellow')
-export class PanelYellow extends PanelBase {
+@ccclass('PanelGreen')
+export class PanelGreen extends PanelBase {
     @property(WButton)
     private btnClose: WButton = null;
 
@@ -19,11 +19,12 @@ export class PanelYellow extends PanelBase {
 
     protected onLoad(): void {
         this.cache = true;
-        this.btnClose.setOnClick(this.node, "PanelYellow", "onBtnCloseClick");
+        this.btnClose.setOnClick(this.node, "PanelGreen", "onBtnCloseClick");
 
         this.tweenShow = tween(this.node).to(this.duration, { scale: Vec3.ONE, angle: 360 * 8 })
         this.tweenHide = tween(this.node).to(this.duration, { scale: Vec3.ZERO, angle: 0 })
     }
+    
     start() {
 
     }
@@ -33,8 +34,8 @@ export class PanelYellow extends PanelBase {
     }
 
     private onBtnCloseClick(event: Event, customEventData: string) {
-        //this.close();
-        this.closeImmediate();
+        this.close();
+        //this.closeImmediate();
     }
 }
 

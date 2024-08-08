@@ -42,6 +42,12 @@ export default class AppConstants {
         // 关闭组件
         Close: 0b100,
     }
+
+    // 事件
+    public static readonly event = {
+        PanelShow: 'PanelShow',
+        PanelHide: 'PanelHide',
+    }
 }
 
 

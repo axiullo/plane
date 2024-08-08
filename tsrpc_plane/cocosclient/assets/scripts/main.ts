@@ -1,4 +1,4 @@
-import { _decorator, Component, error, Game, game, instantiate, log, Node, Prefab, sys } from 'cc';
+import { _decorator, Component, error, Game, game, instantiate, Layers, log, Node, Prefab, sys } from 'cc';
 const { ccclass, property } = _decorator;
 import { ModNet } from './mod/modnet';
 import { UIMgr } from './view/UIMgr';
@@ -7,6 +7,10 @@ import { AudioMgr } from './AudioMgr';
 import App from './App';
 import { UIMain } from './ui/UIMain';
 import { UIBag } from './ui/UIBag';
+import PanelMgr from './view/PanelMgr';
+import AppUtil from './AppUtil';
+import LayerMgr from './view/LayerMgr';
+import Core from './core/Core';
 
 @ccclass('main')
 export class main extends Component {
@@ -33,7 +37,8 @@ export class main extends Component {
 
         }, this);
 
-        App.init();
+        App.init(null, Layers.Enum.UI_2D);
+        Core.init()
     }
 
     start() {
@@ -42,7 +47,7 @@ export class main extends Component {
         UIMgr.inst.open(UIID.UIMain);
 
         //todo 不能同时播放多个文件
-        AudioMgr.inst.play("bg");
+        // AudioMgr.inst.play("bg");
 
         // 5 秒后调用
         // this.scheduleOnce(() => {

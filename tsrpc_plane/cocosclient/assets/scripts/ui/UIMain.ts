@@ -1,4 +1,4 @@
-import { _decorator, Color, Event, instantiate, log,Node, Sprite } from 'cc';
+import { _decorator, Color, Event, instantiate, log, Node, Sprite } from 'cc';
 import { WButton } from '../components/WButton';
 import { UIMgr } from '../view/UIMgr';
 import { UIID } from '../UIConfig';
@@ -7,6 +7,8 @@ import AppUtil from '../AppUtil';
 import App from '../App';
 import { UIView } from '../view/UIView';
 import PanelMgr from '../view/PanelMgr';
+import LayerMgr from '../view/LayerMgr';
+import Tip from '../core/Tip';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMain')
@@ -17,11 +19,19 @@ export class UIMain extends UIView {
     private btnSprite: WButton = null;
     @property(WButton)
     private btnPanelYellow: WButton = null;
+    @property(WButton)
+    private btnPanelGreen: WButton = null;
+    @property(WButton)
+    private btnTip: WButton = null;
 
     protected onLoad(): void {
         this.btnBag.setOnClick(this.node, "UIMain", "btnBagClick");
         this.btnSprite.setOnClick(this.node, "UIMain", "btnSpriteClick");
         this.btnPanelYellow.setOnClick(this.node, "UIMain", "btnPanelYellowClick");
+        this.btnPanelGreen.setOnClick(this.node, "UIMain", "btnPanelGreenClick");
+
+        this.btnTip.setText("Tip");
+        this.btnTip.setOnClick(this.node, "UIMain", "btnTipClick");
     }
 
     start() {
@@ -51,7 +61,7 @@ export class UIMain extends UIView {
 
         const sprite1 = AppUtil.newSpriteNode()
         sprite1.parent = tmpNode
-        sprite1.setPosition(-150,sprite1.getPosition().y);
+        sprite1.setPosition(-150, sprite1.getPosition().y);
 
         const sprite2 = AppUtil.newSpriteNode()
         sprite2.parent = tmpNode
@@ -59,7 +69,7 @@ export class UIMain extends UIView {
 
         const sprite3 = instantiate(sprite1)
         sprite3.parent = tmpNode
-        sprite3.setPosition(150,sprite3.getPosition().y);
+        sprite3.setPosition(150, sprite3.getPosition().y);
         //sprite3.color = Color.RED
         sprite3.getComponent(Sprite).color = Color.RED
 
@@ -73,6 +83,13 @@ export class UIMain extends UIView {
 
     protected btnPanelYellowClick(event: Event) {
         PanelMgr.open(UIID.PanelYellow);
+    }
+    protected btnPanelGreenClick(event: Event) {
+        PanelMgr.open(UIID.PanelGreen);
+    }
+
+    protected btnTipClick(event: Event) {
+        Tip.show("hahahahahha");
     }
 }
 

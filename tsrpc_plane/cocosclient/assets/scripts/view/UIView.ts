@@ -77,13 +77,6 @@ export class UIView extends Component {
     }
 
     /**
-     * * 组件销毁时自动释放所有keep的资源
-     *  */
-    public onDestroy() {
-        this.releaseAssets();
-    }
-
-    /**
      * 释放资源，组件销毁时自动调用
      */
     public releaseAssets() {
@@ -106,7 +99,14 @@ export class UIView extends Component {
     // 销毁
     public doDestroy() {
         this.onDestroy()
-        this.destroy()
+        this.node.destroy()
+    }
+
+    /**
+ * * 组件销毁时自动释放所有keep的资源
+ *  */
+    public onDestroy() {
+        this.releaseAssets();
     }
 
     protected onHiding() { }
