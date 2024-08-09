@@ -1,4 +1,4 @@
-import { _decorator, Component, error, Game, game, instantiate, Layers, log, Node, Prefab, sys } from 'cc';
+import { _decorator, Component, director, error, Game, game, instantiate, Layers, log, Node, Prefab, sys } from 'cc';
 const { ccclass, property } = _decorator;
 import { ModNet } from './mod/modnet';
 import { UIMgr } from './view/UIMgr';
@@ -37,14 +37,19 @@ export class main extends Component {
 
         }, this);
 
+        // director.loadScene('game', () => {
+        //     App.onSceneLoaded()
+        // })
+
         App.init(null, Layers.Enum.UI_2D);
         Core.init()
+        UIMgr.inst.open(UIID.UIMain);
     }
 
     start() {
         //ModNet.getInstance().connect();
 
-        UIMgr.inst.open(UIID.UIMain);
+
 
         //todo 不能同时播放多个文件
         // AudioMgr.inst.play("bg");

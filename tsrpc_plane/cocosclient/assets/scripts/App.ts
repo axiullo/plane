@@ -40,4 +40,9 @@ export default class App {
         UIMgr.inst.initUIConf(this._uiMainUIId);
         PanelMgr.init();
     }
+
+    // 场景加载后回调
+    public static onSceneLoaded() {
+        this.initFramework()
+    }
 }

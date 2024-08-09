@@ -9,6 +9,8 @@ import { UIView } from '../view/UIView';
 import PanelMgr from '../view/PanelMgr';
 import LayerMgr from '../view/LayerMgr';
 import Tip from '../core/Tip';
+import Wait from '../core/Wait';
+import TimerMgr from '../mgr/TimerMgr';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMain')
@@ -23,6 +25,10 @@ export class UIMain extends UIView {
     private btnPanelGreen: WButton = null;
     @property(WButton)
     private btnTip: WButton = null;
+    @property(WButton)
+    private btnWait: WButton = null;
+    @property(WButton)
+    private btnStateMachine: WButton = null;
 
     protected onLoad(): void {
         this.btnBag.setOnClick(this.node, "UIMain", "btnBagClick");
@@ -32,6 +38,11 @@ export class UIMain extends UIView {
 
         this.btnTip.setText("Tip");
         this.btnTip.setOnClick(this.node, "UIMain", "btnTipClick");
+        this.btnWait.setText("Wait");
+        this.btnWait.setOnClick(this.node, "UIMain", "btnWaitClick");
+
+        this.btnStateMachine.setText("State Machine");
+        this.btnStateMachine.setOnClick(this.node, "UIMain", "btnStateClick");
     }
 
     start() {
@@ -91,6 +102,15 @@ export class UIMain extends UIView {
     protected btnTipClick(event: Event) {
         Tip.show("hahahahahha");
     }
+    protected btnWaitClick(event: Event) {
+        Wait.show();
+        TimerMgr.inst.add(3000, () => Wait.hide())
+    }
+
+    protected btnStateClick(event: Event) {
+        PanelMgr.open(UIID.PanelStateMachine)
+    }
+    
 }
 
 

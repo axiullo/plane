@@ -1,4 +1,4 @@
-import { error, instantiate, Prefab, Node, Sprite, Color, UIOpacity, BlockInputEvents, UITransform, Input, EventTouch, tween, Vec3, v3, director, view, log, find, Canvas } from "cc";
+import { error, instantiate, Prefab, Node, Sprite, Color, UIOpacity, BlockInputEvents, UITransform, Input, EventTouch, tween, Vec3, v3, director, view, screen, find, Canvas } from "cc";
 import AppUtil from "../AppUtil";
 import { UIConfig } from "../UIConfig";
 import PanelBase from "./PanelBase";
@@ -100,7 +100,8 @@ export default class PanelMgr {
                 break;
             case AppConstants.panelShowStyle.LeftToCenter:
                 {
-                    const visibleSize = view.getVisibleSize(); // 获取可见区域尺寸（窗口大小）
+                   // const visibleSize = view.getVisibleSize(); // 获取可见区域尺寸（窗口大小）
+                   const visibleSize = screen.windowSize;
                     let winWidth = visibleSize.width
                     this.showSideToCenter(panelInfo, v3(-winWidth, 0, 0))
                 }
