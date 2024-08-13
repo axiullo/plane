@@ -1,4 +1,4 @@
-import { EventKeyboard, KeyCode, log, Node, SystemEvent, systemEvent, screen, Input, input, UITransform } from "cc"
+import { EventKeyboard, KeyCode, log, Node, SystemEvent, systemEvent, screen, Input, input, UITransform, view } from "cc"
 import State from "./State"
 import StateDef from "./StateDef"
 import PanelStateMachine from "../PanelStateMachine"
@@ -25,11 +25,12 @@ export default class StateLeftRight extends State {
 
     public onUpdate(dt: number): void {
         let pos = this._player.getPosition();
-        const visibleSize = screen.windowSize;
+        const visibleSize = view.getVisibleSize();//screen.windowSize;
 
         if (this._moveLeft) {
             this._player.setPosition(pos.x - this._speed * dt, pos.y, pos.z);
             pos = this._player.getPosition();
+            log(pos);
             const minX = -visibleSize.width / 2 + this._player.getComponent(UITransform).width / 2
             if (pos.x < minX) {
                 pos.x = minX
@@ -38,6 +39,7 @@ export default class StateLeftRight extends State {
         } else if (this._moveRight) {
             this._player.setPosition(pos.x + this._speed * dt, pos.y, pos.z);
             pos = this._player.getPosition();
+            log(pos);
             const maxX = visibleSize.width / 2 - this._player.getComponent(UITransform).width / 2
             if (pos.x > maxX) {
                 pos.x = maxX

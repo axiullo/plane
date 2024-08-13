@@ -25,13 +25,15 @@ export default class PanelStateMachine extends PanelBase {
 
     protected onLoad(): void {
         this._machine = new StateMachine(this)
-
         this._machine.register(new StateLeftRight(this))
         this._machine.register(new StateUpDown(this))
 
-        this.btnRL.setOnClick(this.node, "UIMain", "btnRLClick");
-        this.btnUD.setOnClick(this.node, "UIMain", "btnUDClick");
-        this.btnClose.setOnClick(this.node, "UIMain", "btnCloseClick");
+        this.btnRL.setText("左右");
+        this.btnRL.setOnClick(this.node, "PanelStateMachine", "btnRLClick");
+        this.btnUD.setText("上下");
+        this.btnUD.setOnClick(this.node, "PanelStateMachine", "btnUDClick");
+        this.btnClose.setText("关闭");
+        this.btnClose.setOnClick(this.node, "PanelStateMachine", "btnCloseClick");
     }
 
     protected start(): void {

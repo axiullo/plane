@@ -10,6 +10,6 @@ export default class Core {
         if (!await Tip.init()) return
         if (!await Wait.init()) return
 
-        EventMgr.emit(GameConstants.event.CoreLoadOk)
+        //EventMgr.emit(GameConstants.event.CoreLoadOk)
     }
 }

@@ -1,16 +1,13 @@
 import State from "./State"
 
-
 export default class StateMachine {
     private _owner: any
     private _stateMap: Map<string, State> = new Map()
     private _currentState: State
 
-
     public constructor(owner: any) {
         this._owner = owner
     }
-
 
     public register(state: State) {
         if (this._owner != state.owner) {
