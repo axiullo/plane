@@ -109,8 +109,5 @@ export class UIMain extends UIView {
 
     protected btnStateClick(event: Event) {
         PanelMgr.open(UIID.PanelStateMachine)
-    }
-    
+    }   
 }
-
-

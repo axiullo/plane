@@ -43,7 +43,7 @@ export class main extends Component {
 
         App.init(null, Layers.Enum.UI_2D);
         Core.init()
-        UIMgr.inst.open(UIID.UIMain);
+        UIMgr.inst.open(UIID.UIClock);
 
         const visibleSize = view.getVisibleSize();
         log(visibleSize);
@@ -53,8 +53,6 @@ export class main extends Component {
 
     start() {
         //ModNet.getInstance().connect();
-
-
 
         //todo 不能同时播放多个文件
         // AudioMgr.inst.play("bg");

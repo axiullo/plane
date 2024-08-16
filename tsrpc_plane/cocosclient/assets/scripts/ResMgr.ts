@@ -8,7 +8,6 @@ export default class ResMgr {
         return this.loadRes<T>(path)
     }
 
-
     public static loadRemote<T extends Asset>(path: string) {
         return new Promise<T>((resolve, reject) => {
             assetManager.loadRemote(path, (err: Error, asset: T) => {
@@ -53,10 +52,9 @@ export default class ResMgr {
 
                     resolve(asset)
                 })
-            }).
-                catch(err => {
-                    reject(err)
-                })
+            }).catch(err => {
+                reject(err)
+            })
         })
     }
 
@@ -72,10 +70,9 @@ export default class ResMgr {
 
                     resolve(assets)
                 })
-            }).
-                catch(err => {
-                    reject(err)
-                })
+            }).catch(err => {
+                reject(err)
+            })
         })
     }
 
@@ -90,10 +87,9 @@ export default class ResMgr {
 
                     resolve(assets)
                 })
-            }).
-                catch(err => {
-                    reject(err)
-                })
+            }).catch(err => {
+                reject(err)
+            })
         })
     }
 

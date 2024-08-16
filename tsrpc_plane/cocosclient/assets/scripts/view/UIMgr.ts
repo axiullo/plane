@@ -66,7 +66,7 @@ export class UIMgr {
     }
 
     /** 打开界面并添加到界面栈中 */
-    public open(uiId: number, uiArgs: any = null, progressCallback: ProgressCallback | null = null) {
+    public open(uiId: number, uiArgs: any = null) {
         if (this._current && this._current.uiId == uiId) {
             error(`UIMgr.open 已在当前UI:${uiId} ${this._current.uiView.uiName}`);
             return;
@@ -126,6 +126,7 @@ export class UIMgr {
                     uiInfo.preventNode.destroy();
                     uiInfo.preventNode = null;
                 }
+
                 return;
             }
 
@@ -151,8 +152,6 @@ export class UIMgr {
         // 激活界面
         uiInfo.uiView = uiView;
         uiView.node.active = true;
-        AppUtil.debugWithColor("$$$ ui node active");
-
         let uiCom = uiView.getComponent(UITransform);
 
         if (!uiCom) {
@@ -177,7 +176,6 @@ export class UIMgr {
             }, backGround);
         }
 
-        AppUtil.debugWithColor("$$$ ui node setlayer before");
         // 添加到场景中
         LayerMgr.setLayer(uiView.node, AppConstants.viewLayer.UI);
 
@@ -202,7 +200,7 @@ export class UIMgr {
         //     this.uiOpenBeforeDelegate(uiId, fromUIID);
         // }
 
-        if (uiView.showStyle == UIShowStyle.Normal || uiView.duration <= 0 || !this._current) {
+        if (uiView.showStyle == UIShowStyle.Normal || uiView.duration <= 0 /*|| !this._current*/) {
             this.onUIOpenNormal(uiInfo, fromUIID);
         }
         else {
@@ -233,7 +231,7 @@ export class UIMgr {
 
             //第一次展示
             uiView.firstShow();
-            AppUtil.debugWithColor(`ui onOpen ${uiInfo.uiId}`);
+            AppUtil.debugWithColor(`ui onOpen ${uiInfo.uiId} ${uiInfo.uiView.uiName}`);
             UIMgr.inst.showUIAfter(uiInfo);
         }).start();
     }
@@ -262,7 +260,7 @@ export class UIMgr {
             return;
         }
 
-        const [prefab, err] = await AppUtil.asyncWrap<Prefab>(ResMgr.load(UIConfig.UICF[uiId].bundleName, uiPath)); //this.loadUIPrefab(uiPath);
+        const [prefab, err] = await AppUtil.asyncWrap<Prefab>(ResMgr.load(UIConfig.UICF[uiId].bundleName, uiPath));
 
         if (err) {
             error(`loadUIPrefab failed uiPath=${uiPath}, ${err.message}`);
@@ -425,22 +423,6 @@ export class UIMgr {
         // child!.addChild(node);
         // node.setSiblingIndex(zOrder - 0.01);
         return node;
-    }
-
-    /**
- * 加载UI预制体
- * @param uiName UI的名称
- */
-    private async loadUIPrefab(path: string): Promise<Prefab | null> {
-        return new Promise((resolve, reject) => {
-            resources.load(path, Prefab, (err, prefab) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(prefab);
-                }
-            });
-        });
     }
 
     /**
