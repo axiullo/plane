@@ -1,4 +1,4 @@
-import { Layers, log, Node } from 'cc';
+import { Layers, log, Node, Prefab } from 'cc';
 import LayerMgr from "./view/LayerMgr"
 import { UIMgr } from './view/UIMgr';
 import { UIConfig, UIID } from './UIConfig';
@@ -7,6 +7,7 @@ import PanelMgr from './view/PanelMgr';
 export default class App {
     private static _uiMainUIId: number = UIID.UIMain;
     private static _viewLayer: number = Layers.Enum.DEFAULT;
+    private static _clickPrefab: Prefab = null;
 
     // 初始化
     public static init(uiMain?: number, viewLayer?: number) {
@@ -42,7 +43,10 @@ export default class App {
     }
 
     // 场景加载后回调
-    public static onSceneLoaded() {
-        this.initFramework()
+    // public static onSceneLoaded() {
+    //     this.initFramework()
+    // }
+
+    static LoadUIClick(){
     }
 }

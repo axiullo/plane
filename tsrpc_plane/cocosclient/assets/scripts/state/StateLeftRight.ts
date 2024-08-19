@@ -1,4 +1,4 @@
-import { EventKeyboard, KeyCode, log, Node, SystemEvent, systemEvent, screen, Input, input, UITransform, view } from "cc"
+import { EventKeyboard, KeyCode, log, Node, screen, Input, input, UITransform, view } from "cc"
 import State from "./State"
 import StateDef from "./StateDef"
 import PanelStateMachine from "../PanelStateMachine"

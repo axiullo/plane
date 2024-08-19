@@ -13,6 +13,8 @@ export default class AppConstants {
         Panel: 200,
         // 顶层
         Top: 900,
+        //
+        Click:1000,
     }
 
     // Panel 显示方式

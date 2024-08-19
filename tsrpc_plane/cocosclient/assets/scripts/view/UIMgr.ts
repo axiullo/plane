@@ -319,7 +319,6 @@ export class UIMgr {
         }
     }
 
-
     public getUIIndex(uiId: number): number {
         for (let index = this.UIStack.length - 1; index >= 0; index--) {
             const element = this.UIStack[index];

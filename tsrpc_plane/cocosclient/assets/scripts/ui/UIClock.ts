@@ -52,7 +52,7 @@ export class UIClock extends UIView {
         this.resetBtn.node.on(Node.EventType.MOUSE_ENTER, this.BtnEnter); //监听事件
         this.resetBtn.setDisabled(false);
 
-        this.setTs = 1721868436 * 1000;
+        //this.setTs = 1721868436 * 1000;
 
         //this.progressBar.progress = 0.5;
 
@@ -103,7 +103,7 @@ export class UIClock extends UIView {
             this.refreshHands();
         }
 
-        this.progressBar.progress = this.curms / MsMax;
+        //this.progressBar.progress = this.curms / MsMax;
     }
 
     public show() {
