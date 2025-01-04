@@ -1,6 +1,6 @@
-import { user } from '../shared/db/dbstruct';
+import { user } from '../db/dbstruct';
 import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
-import { DataBase } from './DataBase';
+import { DataBase } from '../DataBase';
 
 /**
  * 用户数据

@@ -5,21 +5,8 @@ import { initflow } from "./helper/flowsHelper";
 import * as config from "./config/config.json"
 import { DBIns } from "./mod/ModMongoDB"
 import { Test } from "./test";
-import express from "express";
 import "./helper/EventsHelper"; //导入监听事件处理
 import { Game } from "./mod/Game";
-
-// Create the httpServer
-const webapp = express();
-
-webapp.get('/', (req: express.Request, res: express.Response) => {
-    console.log(req.get('content-type'), req.get('contenttype'), req.ip, req.protocol);
-    res.send('Hello, world!');
-});
-
-webapp.get("/server", (_, res: express.Response) => {
-    res.send("connection count:" + server.connections.length);
-});
 
 // Create the Server
 export const server = new WsServer(serviceProto, {

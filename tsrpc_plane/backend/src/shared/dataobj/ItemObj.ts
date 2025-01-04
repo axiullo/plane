@@ -1,5 +1,5 @@
-import { item } from '../shared/db/dbstruct';
-import { DataBase } from './DataBase';
+import { item } from '../db/dbstruct';
+import { DataBase } from '../DataBase';
 
 /**
  * 道具数据

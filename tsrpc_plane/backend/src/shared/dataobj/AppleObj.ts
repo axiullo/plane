@@ -1,6 +1,6 @@
-import { apple } from '../shared/db/dbstruct';
+import { apple } from '../db/dbstruct';
 import { DateTimeHelper } from '../shared/helper/DateTimeHelper';
-import { DataBase } from './DataBase';
+import { DataBase } from '../DataBase';
 
 /**
  * 杂项数据
